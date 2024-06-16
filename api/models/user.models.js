@@ -28,9 +28,9 @@ const userSchema = new mongoose.Schema(
     },
     cart: [
       {
-        plan: {
+        product: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Plan",
+          ref: "Product",
           required: true,
         },
         quantity: {
@@ -81,7 +81,7 @@ userSchema.methods.generateRefreshToken = function () {
     {
       expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
     }
-  )
-}
+  );
+};
 
 export const User = mongoose.model("User", userSchema);
