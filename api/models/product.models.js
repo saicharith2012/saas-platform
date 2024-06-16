@@ -13,6 +13,9 @@ const productSchema = new mongoose.Schema(
     imageLink: {
       String,
     },
+    stripePriceId: {
+      String,
+    }
   },
   { timestamps: true }
 );
