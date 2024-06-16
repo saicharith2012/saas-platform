@@ -1,11 +1,13 @@
 import { Router } from "express";
 import {
-  registerSuperAdmin,
+  // registerSuperAdmin,
   adminRegistration,
   userRegistration,
   loginUser,
   logoutUser,
   changePassword,
+  addProductToCart,
+  getUserCart,
 } from "../controllers/user.controllers.js";
 import {
   verifyJWT,
@@ -37,5 +39,11 @@ router.route("/logout").post(verifyJWT, logoutUser);
 
 // change password -> user privilege
 router.route("/change-password").put(verifyJWT, changePassword);
+
+// add product to cart -> user privilege
+router.route("/:userId/cart").post(verifyJWT, addProductToCart)
+
+// get user's cart -> user privilege
+router.route("/users/:userId/cart").get(verifyJWT, getUserCart)
 
 export default router;
