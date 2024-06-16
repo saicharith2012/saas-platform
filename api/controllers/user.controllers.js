@@ -1,4 +1,5 @@
 import { User } from "../models/user.models.js";
+import { Product } from "../models/product.models.js";
 import { Organization } from "../models/organization.models.js";
 import validator from "validator";
 
@@ -128,12 +129,14 @@ const userRegistration = async (req, res) => {
   try {
     const { email, name, customPassword } = req.body;
 
-    const organization = await Organization.findById(req.user.organization).populate("plan");
+    const organization = await Organization.findById(
+      req.user.organization
+    ).populate("plan");
     if (!organization) {
       return res.status(404).json({ error: "Organization not found." });
     }
 
-    console.log(organization)
+    console.log(organization);
 
     if (organization.plan.userLimit !== null) {
       const existingUsers = await User.countDocuments({
@@ -277,6 +280,69 @@ const changePassword = async (req, res) => {
   }
 };
 
+// add product to cart
+const addProductToCart = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const productId = req.body.productId;
+    const quantity = req.body.quantity || 1;
+
+    // checking if the user is authorized to modify this cart
+    if (req.user.role !== "Admin" && req.user._id.toString() !== userId) {
+      return res.status(403).json({ error: "Not authorized." });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json();
+    }
+
+    // checking if item is already in the cart
+    const cartItemIndex = user.cart.findIndex(
+      (item) => item.product.toString() === productId
+    );
+
+    if (cartItemIndex !== -1) {
+      // product exists in the cart
+      user.cart[cartItemIndex].quantity += quantity;
+    } else {
+      // product doesnt exist in the cart, add a new item
+      user.cart.push({ product: productId, quantity });
+    }
+
+    await user.save({ validateBeforeSave: false });
+
+    res.status(200).json({ message: "Product added to cart", cart: user.cart });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getUserCart = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Check if the user is authorized to view this cart
+    if (req.user.role !== "Admin" && req.user._id.toString() !== userId) {
+      return res.status(403).json({ error: "Not authorized." });
+    }
+
+    const user = await User.findById(userId).populate("cart.product");
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json(user.cart);
+  } catch (err) {
+    console.error("Error fetching cart:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 export {
   registerSuperAdmin,
   adminRegistration,
@@ -284,4 +350,6 @@ export {
   loginUser,
   logoutUser,
   changePassword,
+  addProductToCart,
+  getUserCart,
 };
