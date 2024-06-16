@@ -1,5 +1,6 @@
 import { Organization } from "../models/organization.models.js";
 import validator from "validator";
+import { Plan } from "../models/plan.models.js";
 
 
 // create organization
@@ -15,10 +16,16 @@ const createOrganization = async (req, res) => {
       return res.status(400).json({ error: "Please enter a valid email" });
     }
 
+    const defaultPlan = await Plan.findOne({name : "Basic"})
+
+    if (!defaultPlan) {
+      return res.status(404).json({ error: "Plan not found." });
+    }
+
     const organization = await Organization.create({
       name,
       billingEmail,
-      plan: planId
+      plan: defaultPlan._id,
     });
 
     if (!organization) {
