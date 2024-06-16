@@ -323,6 +323,7 @@ const addProductToCart = async (req, res) => {
   }
 };
 
+// get user cart
 const getUserCart = async (req, res) => {
   try {
     const userId = req.params.userId;
@@ -343,6 +344,29 @@ const getUserCart = async (req, res) => {
   }
 };
 
+// get user's order history
+const getOrderHistory = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Check authorization (admin can see all user's history, users only their own)
+    if (req.user.role !== "Admin" && !req.user._id.equals(userId)) {
+      return res.status(403).json({ error: "Not authorized." });
+    }
+
+    const orders = await Order.find({ user: userId })
+      .populate("products.product")
+      .populate({
+        path: "user",
+        populate: { path: "organization", populate: { path: "plan" } },
+      }); // Populate plan details
+
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 export {
   registerSuperAdmin,
   adminRegistration,
@@ -352,4 +376,5 @@ export {
   changePassword,
   addProductToCart,
   getUserCart,
+  getOrderHistory
 };

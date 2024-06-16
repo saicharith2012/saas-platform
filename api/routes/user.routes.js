@@ -8,6 +8,7 @@ import {
   changePassword,
   addProductToCart,
   getUserCart,
+  getOrderHistory,
 } from "../controllers/user.controllers.js";
 import {
   verifyJWT,
@@ -41,9 +42,12 @@ router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/change-password").put(verifyJWT, changePassword);
 
 // add product to cart -> user privilege
-router.route("/:userId/cart").post(verifyJWT, addProductToCart)
+router.route("/:userId/add-to-cart").post(verifyJWT, addProductToCart)
 
 // get user's cart -> user privilege
-router.route("/users/:userId/cart").get(verifyJWT, getUserCart)
+router.route("/:userId/cart").get(verifyJWT, getUserCart)
+
+// get order history of the user
+router.route("/:userId/orders").get(verifyJWT, getOrderHistory)
 
 export default router;
