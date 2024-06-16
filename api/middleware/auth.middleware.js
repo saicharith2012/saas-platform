@@ -32,7 +32,7 @@ const verifyJWT = async (req, res, next) => {
 const verifyAuthorization = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      return res.status(403).send({ error: "Unauthroized Request." });
+      return res.status(403).send({ error: "Unauthorized Request." });
     }
 
     next();

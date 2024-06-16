@@ -1,5 +1,12 @@
 import { Router } from "express";
-import { registerSuperAdmin, adminRegistration, userRegistration, loginUser } from "../controllers/user.controllers.js";
+import {
+  registerSuperAdmin,
+  adminRegistration,
+  userRegistration,
+  loginUser,
+  logoutUser,
+  changePassword,
+} from "../controllers/user.controllers.js";
 import {
   verifyJWT,
   verifyAuthorization,
@@ -18,12 +25,17 @@ router
   .post(verifyJWT, verifyAuthorization("Super Admin"), adminRegistration);
 
 // user - signup -> admin privilege
-router.route("/user-signup").post(verifyJWT, verifyAuthorization("Admin"), userRegistration);
+router
+  .route("/user-signup")
+  .post(verifyJWT, verifyAuthorization("Admin"), userRegistration);
 
 // any user login -> user privilege
 router.route("/login").post(loginUser);
 
+// log out -> user privilege
+router.route("/logout").post(verifyJWT, logoutUser);
 
-
+// change password -> user privilege
+router.route("/change-password").put(verifyJWT, changePassword);
 
 export default router;

@@ -81,7 +81,11 @@ const adminRegistration = async (req, res) => {
   try {
     const { email, password, name, organizationId } = req.body;
 
-    if ([email, name, password, organizationId].some((field) => field.trim() === "")) {
+    if (
+      [email, name, password, organizationId].some(
+        (field) => field.trim() === ""
+      )
+    ) {
       return res.status(400).json({ error: "Please fill all the fields" });
     }
 
@@ -119,26 +123,28 @@ const adminRegistration = async (req, res) => {
   }
 };
 
-// user registration by user
+// user registration by admin
 const userRegistration = async (req, res) => {
   try {
     const { email, name, customPassword } = req.body;
 
-    const organization = await Organization.findById(req.user.organization);
+    const organization = await Organization.findById(req.user.organization).populate("plan");
     if (!organization) {
       return res.status(404).json({ error: "Organization not found." });
     }
 
-    // if (organization.plan.userLimit !== null) {
-    //   const existingUsers = await User.countDocuments({
-    //     organization: req.user.organization,
-    //   });
-    //   if (existingUsers >= organization.plan.userLimit) {
-    //     return res
-    //       .status(400)
-    //       .json({ error: "User limit for the plan has been reached." });
-    //   }
-    // }
+    console.log(organization)
+
+    if (organization.plan.userLimit !== null) {
+      const existingUsers = await User.countDocuments({
+        organization: req.user.organization,
+      });
+      if (existingUsers >= organization.plan.userLimit) {
+        return res
+          .status(400)
+          .json({ error: "User limit for the plan has been reached." });
+      }
+    }
 
     const user = await User.create({
       email,
@@ -216,4 +222,66 @@ const loginUser = async (req, res) => {
   }
 };
 
-export { registerSuperAdmin, adminRegistration, userRegistration, loginUser };
+// logout user
+const logoutUser = async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        $set: {
+          accessToken: undefined,
+          refreshToken: undefined,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    return res
+      .status(200)
+      .clearCookie("accessToken", options)
+      .clearCookie("refreshToken", options)
+      .json({ message: "User logged out successfully" });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+// change password
+const changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+
+    const user = await User.findById(req.user?._id);
+
+    if (!user) {
+      return res.status(400).json({ error: "Unauthorized Request" });
+    }
+
+    if (!(await user.isPasswordCorrect(oldPassword))) {
+      return res.status(401).json({ error: "Incorrect password" });
+    }
+
+    user.password = newPassword;
+    await user.save({ validateBeforeSave: false });
+
+    return res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+export {
+  registerSuperAdmin,
+  adminRegistration,
+  userRegistration,
+  loginUser,
+  logoutUser,
+  changePassword,
+};
