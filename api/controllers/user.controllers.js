@@ -2,6 +2,7 @@ import { User } from "../models/user.models.js";
 import { Product } from "../models/product.models.js";
 import { Organization } from "../models/organization.models.js";
 import validator from "validator";
+import {Order} from "../models/order.models.js"
 
 // method to generate access and refresh tokens
 const generateAccessandRefreshToken = async function (userId) {
@@ -165,9 +166,11 @@ const userRegistration = async (req, res) => {
         .json({ error: "Something went wrong while creating the user" });
     }
 
+    const users = await User.find({organization: req.user.organization})
+
     return res
       .status(201)
-      .json({ message: "User registered successfully", user: createdUser });
+      .json({ message: "User registered successfully", users });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
