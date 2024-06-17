@@ -20,21 +20,12 @@ Make sure you have the following installed:
 
 1.  Clone the repository:
 
-    bash
-
-    Copy code
-
     `git clone https://github.com/your_username/your_repository.git
     cd your_repository`
 
 2.  Install dependencies:
-
-    bash
-
-    Copy code
-
     `npm install
-    # or
+    or
     yarn install`
 
 ### Setting Up Environment Variables
@@ -42,10 +33,6 @@ Make sure you have the following installed:
 1.  Create a `.env` file in the root directory of the project.
 
 2.  Add the following environment variables to `.env`:
-
-    plaintext
-
-    Copy code
 
     `PORT=5000
     MONGODB_URI=mongodb://localhost:27017/your_database_name`
@@ -55,26 +42,13 @@ Make sure you have the following installed:
 ### Running the Application
 
 1.  Start the backend server:
-
-    bash
-
-    Copy code
-
-    `npm run server
-    # or
-    yarn server`
+    `npm start`
 
     This will start the backend server at `http://localhost:5000`.
 
 2.  Start the frontend development server:
 
-    bash
-
-    Copy code
-
-    `npm start
-    # or
-    yarn start`
+    `npm start`
 
     This will start the frontend server and open the application in your default web browser at `http://localhost:3000`.
 
@@ -91,4 +65,4 @@ Make sure you have the following installed:
 -   **Backend:** Node.js, Express, MongoDB
 -   **Authentication:** JWT, Cookies
 -   **Data Fetching:** Axios
--   **Styling:** CSS, Bootstrap (optional)
+-   **Styling:** CSS, Bootstrap (optional)https://github.com/saicharith2012/saas-platform
