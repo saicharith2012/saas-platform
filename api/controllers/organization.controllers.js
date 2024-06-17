@@ -1,12 +1,12 @@
 import { Organization } from "../models/organization.models.js";
 import validator from "validator";
 import { Plan } from "../models/plan.models.js";
-
+import { User } from "../models/user.models.js";
 
 // create organization
 const createOrganization = async (req, res) => {
   try {
-    const { name, billingEmail, planId } = req.body;
+    const { name, billingEmail } = req.body;
 
     if ([name, billingEmail].some((field) => field.trim() === "")) {
       return res.status(400).json({ error: "Please fill all the fields" });
@@ -16,16 +16,16 @@ const createOrganization = async (req, res) => {
       return res.status(400).json({ error: "Please enter a valid email" });
     }
 
-    const defaultPlan = await Plan.findOne({name : "Basic"})
+    // const defaultPlan = await Plan.findOne({name : "Basic"})
 
-    if (!defaultPlan) {
-      return res.status(404).json({ error: "Plan not found." });
-    }
+    // if (!defaultPlan) {
+    //   return res.status(404).json({ error: "Plan not found." });
+    // }
 
     const organization = await Organization.create({
       name,
       billingEmail,
-      plan: defaultPlan._id,
+      // plan: defaultPlan._id,
     });
 
     if (!organization) {
@@ -46,11 +46,31 @@ const createOrganization = async (req, res) => {
 // get all organistions
 const getAllOrganizations = async (req, res) => {
   try {
-    const organizations = await Organization.find();
-    return res.json({ organizations, message: "Organizations fetched successfully" });
+    const organizations = await Organization.find().populate("plan");
+    return res.json({
+      organizations,
+      message: "Organizations fetched successfully",
+    });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
+};
 
-}
-export { createOrganization, getAllOrganizations };
+// get users from an organization
+const getOrganizationUsers = async (req, res) => {
+  try {
+    const organizationId = req.params.id;
+
+    const userCount = await User.countDocuments({
+      organization: organizationId,
+    });
+
+    res.json({ userCount });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: err.message, message: "could not fetch no.of users" });
+  }
+};
+
+export { createOrganization, getAllOrganizations, getOrganizationUsers };
