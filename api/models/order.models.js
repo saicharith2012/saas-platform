@@ -18,7 +18,7 @@ const orderSchema = new mongoose.Schema(
     ],
     orderStatus: {
       type: String,
-      enum: ["failed", "success"],
+      enum: ["failed", "success", "pending"],
       default: "failed",
     },
     paymentId: {
@@ -29,6 +29,12 @@ const orderSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    amount: {
+      type: Number
+    },
+    currency: {
+      type: String
+    }
   },
   { timestamps: true }
 );
