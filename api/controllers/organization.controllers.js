@@ -56,7 +56,7 @@ const getAllOrganizations = async (req, res) => {
   }
 };
 
-// get users from an organization
+// get users count from an organization
 const getOrganizationUsers = async (req, res) => {
   try {
     const organizationId = req.params.id;
@@ -73,4 +73,42 @@ const getOrganizationUsers = async (req, res) => {
   }
 };
 
-export { createOrganization, getAllOrganizations, getOrganizationUsers };
+const getOrganizationUsersData = async (req, res) => {
+  const orgId = req.params?.id;
+  console.log(orgId)
+
+  try {
+    const users = await User.find({ organization: orgId });
+    res.status(200).json({ users });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+const getOrganizationData = async (req, res) => {
+  const orgId = req.params.id;
+
+  try {
+    const organization = await Organization.findById(orgId).populate("plan");
+    if (!organization) {
+      return res.status(404).json({ message: "Organization not found" });
+    }
+
+    // Optionally populate plan details if you have a plan schema reference
+    // await organization.populate('plan').execPopulate();
+
+    res.status(200).json({ organization });
+  } catch (error) {
+    console.error("Error fetching organization:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export {
+  createOrganization,
+  getAllOrganizations,
+  getOrganizationUsers,
+  getOrganizationUsersData,
+  getOrganizationData
+};
