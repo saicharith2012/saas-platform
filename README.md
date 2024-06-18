@@ -18,29 +18,55 @@ Make sure you have the following installed:
 
 ### Installing
 
-1.  Clone the repository:
+Step 1: Clone the repository:
+------------------------------------
 
     `git clone https://github.com/your_username/your_repository.git
     cd your_repository`
 
-2.  Install dependencies:
+Step 1: Install dependencies:
+------------------------------------
     `npm install
     or
     yarn install`
 
-### Setting Up Environment Variables
+Step 3: Set Up Environment Variables:
+------------------------------------
 
-1.  Create a `.env` file in the root directory of the project.
+Create a `.env` file in the root directory of the project with the following variables:
 
-2.  Add the following environment variables to `.env`:
+## MongoDB connection URI
+MONGODB_URI=mongodb://localhost:27017/yourdatabase
 
-    `PORT=5000
-    MONGODB_URI=mongodb://localhost:27017/your_database_name`
+## JWT Tokens secret key
+ACCESS_TOKEN_SECRET = access_token_secret_key
+REFRESH_TOKEN_SECRET = refresh_token_secret_key
 
-    Replace `your_database_name` with the name of your MongoDB database.
+## Stripe secret key (replace with your Stripe secret key)
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
 
-### Running the Application
+## Stripe webhook secret (generate from Stripe Dashboard)
+STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret`
 
+Step 4: Stripe Setup:
+--------------------
+
+1.  **Create a Stripe Account**:
+
+    -   Sign up or log in to your Stripe account at [Stripe Dashboard](https://dashboard.stripe.com/register).
+2.  **Retrieve Your Stripe API Keys**:
+
+    -   In the Stripe Dashboard, navigate to Developers > API keys.
+    -   Copy your `Publishable Key` and `Secret Key`.
+3.  **Set Up Webhook Endpoint**:
+
+    -   In the Stripe Dashboard, navigate to Developers > Webhooks.
+    -   Click on "Add endpoint".
+    -   Set the endpoint URL to your deployed backend URL followed by `/api/payment/webhook` (e.g., `http://localhost:5000/api/payment/webhook` for local development).
+    -   Select "receive all events" and add the endpoint.
+
+Step 5: Start the Application:
+------------------------------
 1.  Start the backend server:
     `npm start`
 
@@ -50,7 +76,14 @@ Make sure you have the following installed:
 
     `npm start`
 
-    This will start the frontend server and open the application in your default web browser at `http://localhost:3000`.
+    This will start the frontend server.
+
+Step 6: Testing
+---------------
+
+Open your browser and go to `http://localhost:3001` to see the application running.
+
+* * * * *
 
 ### Usage
 
@@ -61,8 +94,44 @@ Make sure you have the following installed:
 
 ### Built With
 
--   **Frontend:** React, React Router, Redux Toolkit, Axios
+-   **Frontend:** React, React Router, Redux Toolkit (State Management), Axios
 -   **Backend:** Node.js, Express, MongoDB
 -   **Authentication:** JWT, Cookies
 -   **Data Fetching:** Axios
--   **Styling:** CSS, Bootstrap (optional)https://github.com/saicharith2012/saas-platform
+-   **Styling:** CSS
+-   **Payment Processing** Stripe
+
+### Additional Notes
+
+-   **Database Configuration**:
+
+    -   Ensure MongoDB is running locally or replace `MONGODB_URI` with your database URI.
+-   **Stripe Integration**:
+
+    -   Ensure your Stripe API keys and webhook secret are correctly configured in your `.env` file and Stripe Dashboard.
+    -   Test payments and webhook events thoroughly in a development environment before deploying to production.
+
+## Screenshots
+### Login page
+![Screenshot from 2024-06-18 09-00-54](https://github.com/saicharith2012/saas-platform/assets/78155986/92cc2917-c4bb-43b8-be0c-4733b9ceb1e2)
+
+### Landing page
+![Screenshot from 2024-06-18 09-01-03](https://github.com/saicharith2012/saas-platform/assets/78155986/f3e3518f-6afa-4060-961b-cb683bd158a8)
+
+### Cart
+![Screenshot from 2024-06-18 09-01-22](https://github.com/saicharith2012/saas-platform/assets/78155986/524d65f6-8697-4c11-944f-d31934d50049)
+
+### Stripe Checkout
+![Screenshot from 2024-06-18 09-01-50](https://github.com/saicharith2012/saas-platform/assets/78155986/27f66532-eb78-453c-8ba9-e6a226fcf24b)
+
+### Order History
+![Screenshot from 2024-06-18 09-02-31](https://github.com/saicharith2012/saas-platform/assets/78155986/4ee1f8de-2f01-4628-93b3-bc8adfe1fda3)
+
+### Super admin dashboard
+![Screenshot from 2024-06-18 09-04-26](https://github.com/saicharith2012/saas-platform/assets/78155986/11fc17cc-087b-4ba3-a97d-5baf91bf1ea7)
+
+### Admin Dashboard
+![Screenshot from 2024-06-18 09-04-44](https://github.com/saicharith2012/saas-platform/assets/78155986/e70ba631-8d6f-413e-901a-b1b21a2e5cea)
+
+### Browse plans
+![Screenshot from 2024-06-18 09-04-51](https://github.com/saicharith2012/saas-platform/assets/78155986/06131650-356f-4ae9-93f0-f2c9e9edbe49)
