@@ -35,16 +35,17 @@ Step 3: Set Up Environment Variables:
 
 Create a `.env` file in the root directory of the project with the following variables:
 
-`# MongoDB connection URI
+## MongoDB connection URI
 MONGODB_URI=mongodb://localhost:27017/yourdatabase
 
-# JWT secret key
-JWT_SECRET=your_jwt_secret_key
+## JWT Tokens secret key
+ACCESS_TOKEN_SECRET = access_token_secret_key
+REFRESH_TOKEN_SECRET = refresh_token_secret_key
 
-# Stripe secret key (replace with your Stripe secret key)
+## Stripe secret key (replace with your Stripe secret key)
 STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
 
-# Stripe webhook secret (generate from Stripe Dashboard)
+## Stripe webhook secret (generate from Stripe Dashboard)
 STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret`
 
 Step 4: Stripe Setup:
