@@ -50,7 +50,7 @@ function Products() {
       ) : (
         <div className="products-list" style={{display: "flex", flexDirection: "row"}}>
           {products.map((product) => (
-            <div key={product._id} className="product-item" style={{margin: "5px"}}>
+            <div key={product._id} className="product-item" style={{margin: "5px", display: "flex", flexDirection: "column"}}>
               <h3>{product.name}</h3>
               <p>Price: ₹{product.price}</p>
               {product.imageLink && <img src={product.imageLink} alt={product.name} />}

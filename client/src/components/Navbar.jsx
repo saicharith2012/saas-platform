@@ -16,7 +16,7 @@ export default function Navbar() {
         alignItems: "center",
       }}
     >
-      <h1>Saas Platform</h1>
+      <h1><Link style={{textDecoration: "none", color: "black"}} to="/">Saas Platform</Link></h1>
       {isLoggedIn ? <LogoutButton /> :  <Link to="/login">Login</Link>}
     </div>
   );
