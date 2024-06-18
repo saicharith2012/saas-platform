@@ -13,6 +13,8 @@ import Products from "./components/Product.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { loadUserFromToken } from "./authSlice.js";
+import Cart from "./pages/Cart.jsx";
+
 
 function App() {
   const dispatch = useDispatch()
@@ -34,6 +36,7 @@ function App() {
         <Route path="/superadmin-dashboard" element={<SuperAdminDashboard />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/products" element={<Products />} />
+        <Route path="/cart" element={<Cart />} />
       </Routes>
     </Router>
   );
