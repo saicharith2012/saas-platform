@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import Navbar from "../components/Navbar";
 
 function OrderHistory({ userId }) {
   const [orders, setOrders] = useState([]);
@@ -30,6 +31,7 @@ function OrderHistory({ userId }) {
 
   return (
     <div className="order-history-container">
+    <Navbar/>
       <h2>Order History</h2>
       {loading ? (
         <p>Loading order history...</p>
