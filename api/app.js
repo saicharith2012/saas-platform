@@ -15,11 +15,15 @@ app.use(
 );
 
 // json request body parser
-app.use(
-  express.json({
-    limit: "16kb",
-  })
-);
+app.use((req, res, next) => {
+  if (req.originalUrl.includes("/payments/webhook")) {
+    next();
+  } else {
+    express.json({
+      limit: "16kb",
+    })(req, res, next);
+  }
+});
 
 // url-encoded request body parsers
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
