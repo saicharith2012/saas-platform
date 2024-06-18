@@ -13,6 +13,7 @@ import { Order } from "../models/order.models.js";
 import { Plan } from "../models/plan.models.js";
 import { Subscription } from "../models/subscription.models.js";
 import { Organization } from "../models/organization.models.js";
+import { User } from "../models/user.models.js";
 
 const router = express.Router();
 
@@ -39,7 +40,6 @@ router
 router
   .route("/webhook")
   .post(express.raw({ type: "application/json" }), async (req, res) => {
-
     const sig = req.headers["stripe-signature"]; // Get Stripe signature from headers
     let event;
 
@@ -118,7 +118,11 @@ router
           // 2. Update order status and payment details
           order.orderStatus = "success";
           order.paymentId = paymentIntentId;
-          await order.save();
+          await order.save({ validateBeforeSave: false });
+
+          const user = await User.findById(userId);
+          user.cart = [];
+          await user.save({ validateBeforeSave: false });
 
           // Additional logic for order fulfillment (e.g., sending confirmation email)
           // ...

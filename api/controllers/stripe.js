@@ -89,10 +89,6 @@ const createCheckoutSessionProducts = async (req, res) => {
       orderStatus: "pending",
     });
 
-    // Clear cart after successful checkout
-    user.cart = [];
-    await user.save({ validateBeforeSave: false });
-
     res.json({ sessionId: session.id, orderId: newOrder._id });
   } catch (err) {
     res.status(500).json({ error: err.message });
