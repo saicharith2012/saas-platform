@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { loadUserFromToken } from "./authSlice.js";
 import Cart from "./pages/Cart.jsx";
+import OrderHistory from "./pages/OrderHistory.jsx";
 
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/products" element={<Products />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/order-history" element={<OrderHistory/>}/>
       </Routes>
     </Router>
   );

@@ -17,6 +17,8 @@ function Home() {
       <Navbar />
       <Products />
       {isLoggedIn && <Link to="/cart">Go to Cart</Link>}
+      <br/>
+      {isLoggedIn && <Link to="/order-history">Order History</Link>}
     </div>
   );
 }
