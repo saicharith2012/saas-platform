@@ -66,3 +66,16 @@ Make sure you have the following installed:
 -   **Authentication:** JWT, Cookies
 -   **Data Fetching:** Axios
 -   **Styling:** CSS, Bootstrap (optional)https://github.com/saicharith2012/saas-platform
+
+## Screenshots
+### Login page
+![Screenshot from 2024-06-18 09-00-54](https://github.com/saicharith2012/saas-platform/assets/78155986/92cc2917-c4bb-43b8-be0c-4733b9ceb1e2)
+
+
+### Landing page
+### Cart
+### Stripe Checkout
+### Order History
+### Super admin dashboard
+### Admin Dashboard
+### Browse plans
