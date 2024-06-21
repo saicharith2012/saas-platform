@@ -102,7 +102,7 @@ function AdminDashboard() {
               <h3>Subscribed Plan</h3>
               <p>{organization.plan.name}</p>
               <p>{organization.plan.description}</p>
-              <p>User Limit: {organization.plan.userLimit - 1}</p>
+              <p>User Limit: {organization.plan.userLimit === null ? "NA" : organization.plan.userLimit - 1}</p>
             </div>
           ) : (
             <div>
