@@ -1,35 +1,10 @@
-// src/components/Success.jsx
-
-import React from 'react';
-import { useLocation } from 'react-router-dom';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import Navbar from '../components/Navbar';
+import React from "react";
 
 const Success = () => {
-  const location = useLocation();
-  const sessionId = new URLSearchParams(location.search).get('session_id');
-  const [message, setMessage] = useState('Processing your payment...');
-
-  useEffect(() => {
-    if (sessionId) {
-      axios
-        .get(`/api/payment/verify-checkout-session/${sessionId}`)
-        .then((response) => {
-          setMessage('Payment Successful! Thank you for your purchase.');
-        })
-        .catch((error) => {
-          console.error('Error verifying checkout session:', error);
-          setMessage('Something went wrong. Please contact support.');
-        });
-    }
-  }, [sessionId]);
-
   return (
-    <div className="success-container">
-    <Navbar/>
-      <h2>Payment Status</h2>
-      <p>{message}</p>
+    <div>
+      <h1>Subscription Successful!</h1>
+      <p>Thank you for subscribing to our service.</p>
     </div>
   );
 };
