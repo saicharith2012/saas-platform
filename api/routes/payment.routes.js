@@ -61,14 +61,20 @@ router
         const organizationId = session.client_reference_id;
 
         try {
+          const plan = await Plan.findOne({
+            stripeProductId: session.metadata.planId,
+          });
+
+          if (!plan) {
+            return res.status(404).json({ error: "Plan not found" });
+          }
+
           // Update organization with the subscribed plan and stripe customer ID
           const organization = await Organization.findById(organizationId);
           if (!organization) {
             return res.status(404).json({ error: "Organization not found" });
           }
-          const plan = await Plan.findOne({
-            stripeProductId: session.line_items.data[0].price.product,
-          });
+
           organization.plan = plan._id;
           organization.stripeCustomerId = session.customer;
           await organization.save();
@@ -124,11 +130,9 @@ router
           user.cart = [];
           await user.save({ validateBeforeSave: false });
 
-          // Additional logic for order fulfillment (e.g., sending confirmation email)
           // ...
         } catch (err) {
           console.error("Error handling successful payment:", err);
-          // Consider retrying or notifying the user/admin of the issue
         }
       }
     }
