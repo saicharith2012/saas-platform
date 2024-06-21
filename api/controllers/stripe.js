@@ -12,8 +12,7 @@ const createCheckoutSessionSubscription = async (req, res) => {
   try {
     const organizationId = req.user.organization;
     console.log(organizationId.toString());
-    console.log(req.body.priceId)
-
+    console.log(req.body.priceId);
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
@@ -100,8 +99,25 @@ const createCheckoutSessionProducts = async (req, res) => {
   }
 };
 
+const getCheckoutSession = async (req, res) => {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+  const { sessionId } = req.params;
+
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ["line_items", "customer"],
+    });
+    res.status(200).json(session);
+  } catch (error) {
+    console.error("Error retrieving checkout session:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export {
   createCheckoutSessionSubscription,
   createPortalSession,
   createCheckoutSessionProducts,
+  getCheckoutSession,
 };

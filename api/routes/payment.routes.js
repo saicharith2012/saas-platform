@@ -7,6 +7,7 @@ import {
   createCheckoutSessionProducts,
   createCheckoutSessionSubscription,
   createPortalSession,
+  getCheckoutSession,
 } from "../controllers/stripe.js";
 import Stripe from "stripe";
 import { Order } from "../models/order.models.js";
@@ -183,5 +184,8 @@ router
 
     res.status(200).json({ received: true });
   });
+
+// get stripe session
+router.route("/checkout-session/:sessionId").get(getCheckoutSession);
 
 export default router;
