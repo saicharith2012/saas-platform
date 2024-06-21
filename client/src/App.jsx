@@ -41,8 +41,8 @@ function App() {
         <Route path="/products" element={<Products />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/order-history" element={<OrderHistory/>}/>
-        <Route path="/success" component={<Success/>} />
-        <Route path="/cancel" component={<Cancel/>} />
+        <Route path="/success" element={<Success/>} />
+        <Route path="/cancel" element={<Cancel/>} />
       </Routes>
     </Router>
   );
