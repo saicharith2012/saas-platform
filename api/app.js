@@ -7,7 +7,7 @@ const app = express();
 // cors
 app.use(
   cors({
-    origin: "http://localhost:3001",  // <-- location of the react app
+    origin: "http://localhost:3000",  // <-- location of the react app
     methods: ["GET", "POST", "PUT", "DELETE"], 
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
@@ -45,7 +45,6 @@ app.use("/api/organizations", organizationRouter)
 app.use("/api/payments", paymentRouter)
 app.use("/api/products", productRouter)
 
-// webhook for stripe payments
 
 export default app;
 
