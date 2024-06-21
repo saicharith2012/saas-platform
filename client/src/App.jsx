@@ -16,6 +16,7 @@ import { loadUserFromToken } from "./authSlice.js";
 import Cart from "./pages/Cart.jsx";
 import OrderHistory from "./pages/OrderHistory.jsx";
 import Success from "./pages/Success.jsx";
+import Cancel from "./pages/Cancel.jsx";
 
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/order-history" element={<OrderHistory/>}/>
         <Route path="/success" component={<Success/>} />
+        <Route path="/cancel" component={<Cancel/>} />
       </Routes>
     </Router>
   );
