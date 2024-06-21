@@ -121,7 +121,7 @@ Open your browser and go to `http://localhost:3001` to see the application runni
 ### Cart
 ![Screenshot from 2024-06-18 09-01-22](https://github.com/saicharith2012/saas-platform/assets/78155986/524d65f6-8697-4c11-944f-d31934d50049)
 
-### Stripe Checkout
+### Stripe Checkout - products
 ![Screenshot from 2024-06-18 09-01-50](https://github.com/saicharith2012/saas-platform/assets/78155986/27f66532-eb78-453c-8ba9-e6a226fcf24b)
 
 ### Order History
@@ -135,3 +135,8 @@ Open your browser and go to `http://localhost:3001` to see the application runni
 
 ### Browse plans
 ![Screenshot from 2024-06-18 09-04-51](https://github.com/saicharith2012/saas-platform/assets/78155986/06131650-356f-4ae9-93f0-f2c9e9edbe49)
+
+### Stripe Checkout - subscription
+![image](https://github.com/saicharith2012/saas-platform/assets/78155986/d149b0d6-fadc-4149-89c0-872bd35899cc)
+![image](https://github.com/saicharith2012/saas-platform/assets/78155986/a8d91e39-3542-4759-9eab-d758ee27d812)
+
