@@ -38,6 +38,7 @@ const SuccessPage = () => {
 
   return (
     <div>
+    <Navbar/>
       <h2>{sessionData.mode === "payment" ? "Payment Successful." : "Thank you for subscribing."}</h2>
       {sessionData && (
         <div>
