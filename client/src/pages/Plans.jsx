@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios"; // Make sure you have Axios installed
+import axios from "axios";
+import { useSelector } from "react-redux";
+import { loadStripe } from "@stripe/stripe-js";
+import { Navigate } from "react-router-dom";
+
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
 function Plans() {
-  const [plans, setPlans] = useState([]); // To store the fetched plans
-    const organizationId = "666e69565f144579118df892"// Assuming you store the org ID
+  const [plans, setPlans] = useState([]);
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/plans/");
-        console.log(response.data)
+        const response = await axios.get("http://localhost:5000/api/plans/", {
+          withCredentials: true,
+        });
         setPlans(response.data);
       } catch (error) {
         console.error("Error fetching plans:", error);
@@ -20,19 +26,23 @@ function Plans() {
   }, []);
 
   const handleCheckout = async (plan) => {
-    console.log("redirect to stripe checkout");
-    // try {
-    //   const response = await axios.post("/api/create-checkout-session", {
-    //     priceId: plan.stripeProductId,
-    //     organizationId,
-    //   });
-
-    //   const stripe = Stripe("YOUR_STRIPE_PUBLISHABLE_KEY");
-    //   await stripe.redirectToCheckout({ sessionId: response.data.sessionId });
-    // } catch (error) {
-    //   console.error("Error initiating checkout:", error);
-    //   // Handle the error, e.g., display an error message to the user
-    // }
+    if (!user) {
+      alert("Please log in to proceed with the subscription.");
+      Navigate("/login");
+      return;
+    }
+    const stripe = await stripePromise;
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/payments/create-checkout-session/subscription",
+        { priceId: plan.stripeProductId },
+        { withCredentials: true }
+      );
+      const { sessionId } = response.data;
+      stripe.redirectToCheckout({ sessionId });
+    } catch (error) {
+      console.error("Error creating checkout session:", error);
+    }
   };
 
   return (
@@ -44,7 +54,12 @@ function Plans() {
             <div className="plan-card">
               <h3>{plan.name}</h3>
               <p>{plan.description}</p>
-              <p>User limit: {plan.userLimit === null ? "above 10 users" : plan.userLimit  - 1}</p>
+              <p>
+                User limit:{" "}
+                {plan.userLimit === null
+                  ? "above 10 users"
+                  : plan.userLimit - 1}
+              </p>
               <p>₹{plan.pricePerUserPerYear} per user per year</p>
               <button onClick={() => handleCheckout(plan)}>Subscribe</button>
             </div>
