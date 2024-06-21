@@ -5,29 +5,34 @@ import { Organization } from "../models/organization.models.js";
 import { Plan } from "../models/plan.models.js";
 import { Subscription } from "../models/subscription.models.js";
 
-const YOUR_DOMAIN = "http://localhost:3001";
+const YOUR_DOMAIN = "http://localhost:3000";
 
 const createCheckoutSessionSubscription = async (req, res) => {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   try {
     const organizationId = req.user.organization;
-    const { priceId } = req.body;
+    console.log(organizationId.toString());
+    console.log(req.body.priceId)
+
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       payment_method_types: ["card"],
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: [{ price: req.body.priceId, quantity: 1 }],
       success_url: `${YOUR_DOMAIN}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${YOUR_DOMAIN}/cancel`,
-      client_reference_id: organizationId,
+      client_reference_id: organizationId.toString(),
+      metadata: { planId: req.body.priceId.toString() },
     });
 
     res.json({ sessionId: session.id });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.message, message: "error" });
   }
 };
 
 const createPortalSession = async (req, res) => {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   try {
     const organization = await Organization.findById(req.user.organization);
     if (!organization || !organization.stripeCustomerId) {
@@ -63,12 +68,12 @@ const createCheckoutSessionProducts = async (req, res) => {
 
     const lineItems = cart.map((item) => ({
       price_data: {
-        currency: "inr", 
+        currency: "inr",
         product_data: {
           name: item.product.name,
           images: [item.product.imageLink], // optional, add images if available
         },
-        unit_amount: item.product.price * 100, 
+        unit_amount: item.product.price * 100,
       },
       quantity: item.quantity,
     }));
@@ -94,7 +99,6 @@ const createCheckoutSessionProducts = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 export {
   createCheckoutSessionSubscription,
