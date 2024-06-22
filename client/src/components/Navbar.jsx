@@ -1,5 +1,5 @@
 import React from "react";
-import LogoutButton from "./LogoutButton";
+import Logout from "./Logout";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -24,7 +24,7 @@ export default function Navbar() {
       </h1>
       {isAdmin ? <Link className="navbar-link" to="/admin-dashboard">Admin Dashboard</Link> : null}
       {isSuperAdmin? <Link className="navbar-link" to="/superadmin-dashboard">Super Admin Dashboard</Link> : null}
-      {isLoggedIn ? <LogoutButton /> : <Link className="navbar-link" to="/login">Login</Link>}
+      {isLoggedIn ? <><Logout/> <p>{user.name}</p> </>: <Link className="navbar-link" to="/login">Login</Link>}
     </div>
   );
 }
