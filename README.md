@@ -21,14 +21,14 @@ Make sure you have the following installed:
 Step 1: Clone the repository:
 ------------------------------------
 
-    `git clone https://github.com/your_username/your_repository.git
-    cd your_repository`
+    git clone https://github.com/your_username/your_repository.git
+    cd your_repository
 
 Step 1: Install dependencies:
 ------------------------------------
-    `npm install
+    npm install
     or
-    yarn install`
+    yarn install
 
 Step 3: Set Up Environment Variables:
 ------------------------------------
@@ -52,17 +52,16 @@ Step 4: Stripe Setup:
 --------------------
 
 1.  **Create a Stripe Account**:
-
     -   Sign up or log in to your Stripe account at [Stripe Dashboard](https://dashboard.stripe.com/register).
-2.  **Retrieve Your Stripe API Keys**:
 
+2.  **Retrieve Your Stripe API Keys**:
     -   In the Stripe Dashboard, navigate to Developers > API keys.
     -   Copy your `Publishable Key` and `Secret Key`.
+      
 3.  **Set Up Webhook Endpoint**:
-
     -   In the Stripe Dashboard, navigate to Developers > Webhooks.
     -   Click on "Add endpoint".
-    -   Set the endpoint URL to your deployed backend URL followed by `/api/payment/webhook` (e.g., `http://localhost:5000/api/payment/webhook` for local development).
+    -   Set the endpoint URL to your deployed backend URL followed by `/api/payments/webhook` (e.g., `http://localhost:5000/api/payment/webhook` for local development).
     -   Select "receive all events" and add the endpoint.
 
 Step 5: Start the Application:
@@ -86,10 +85,26 @@ Open your browser and go to `http://localhost:3001` to see the application runni
 * * * * *
 
 ### Usage
+## For Super Admin
 
 -   **Login:** Access the login page at `http://localhost:3000/login` and log in using super admin credentials.
 -   **Super Admin Dashboard:** After logging in, you'll be redirected to the Super Admin Dashboard where you can create organizations and add admins.
 -   **Creating Organizations:** Fill out the form with the organization name, billing email, and admin details (name, email, password) to create a new organization and assign an admin.
+-   **Logout:** Click on the "Logout" button in the navigation bar to log out from the application.
+
+## For Admin
+
+-   **Login:** Access the login page at `http://localhost:3000/login` and log in using admin credentials provided by the super admin.
+-   **Admin Dashboard:** After logging in, you'll be redirected to the Admin Dashboard where you can manage the organization's details, view and manage users, and handle subscriptions.
+-   **Managing Users:** Admins can add, edit, or remove users within their organization.
+-   **Logout:** Click on the "Logout" button in the navigation bar to log out from the application.
+
+## For Users
+
+-   **Browse Plans:** Users can browse available subscription plans by navigating to the plans page.
+-   **Add to Cart:** Users can add products or plans to their cart and proceed to checkout.
+-   **Checkout:** Users can use the integrated Stripe checkout to complete their purchase.
+-   **Order History:** After purchasing, users can view their order history from their account page.
 -   **Logout:** Click on the "Logout" button in the navigation bar to log out from the application.
 
 ### Built With
