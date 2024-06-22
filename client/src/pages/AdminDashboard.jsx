@@ -40,7 +40,6 @@ function AdminDashboard() {
             withCredentials: true,
           }
         );
-        console.log(response);
         setUsers(response.data.users);
       } catch (error) {
         console.error("Error fetching users:", error);

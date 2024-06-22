@@ -75,7 +75,6 @@ const getOrganizationUsers = async (req, res) => {
 
 const getOrganizationUsersData = async (req, res) => {
   const orgId = req.params?.id;
-  console.log(orgId)
 
   try {
     const users = await User.find({ organization: orgId });
