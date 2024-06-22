@@ -23,3 +23,12 @@
     width: 320px;
 }
 
+.navbar-link {
+    text-decoration: none;
+    color: black;
+    margin: 0 1rem;
+  }
+  
+.navbar-link:hover {
+    text-decoration: underline;
+  }
