@@ -140,7 +140,11 @@ const userRegistration = async (req, res) => {
       return res.status(404).json({ error: "Organization not found." });
     }
 
-    console.log(organization);
+    // console.log(organization);
+
+    if(!organization.plan) {
+      return res.status(404).json({ error: "Not subscribed to any plan." });
+    }
 
     if (organization.plan.userLimit !== null) {
       const existingUsers = await User.countDocuments({

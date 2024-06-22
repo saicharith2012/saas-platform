@@ -13,6 +13,8 @@ function AdminDashboard() {
     email: "",
     password: "",
   });
+
+  const [error, setError] = useState("")
   //   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   //   console.log(user)
@@ -31,6 +33,7 @@ function AdminDashboard() {
         setOrganization(response.data.organization);
       } catch (error) {
         console.error("Error fetching organization:", error);
+        setError("Error fetching organization")
       }
 
       try {
@@ -43,6 +46,7 @@ function AdminDashboard() {
         setUsers(response.data.users);
       } catch (error) {
         console.error("Error fetching users:", error);
+        setError("Error fetching users")
       }
     };
 
@@ -76,6 +80,7 @@ function AdminDashboard() {
 
       if (response.data.error) {
         console.log(response.data.error);
+        setError(response.data.error) 
       }
       setUsers(response.data.users);
       setNewUser({
@@ -85,6 +90,7 @@ function AdminDashboard() {
       });
     } catch (error) {
       console.error("Error creating user:", error);
+      setError(error.response.data.error)
     }
   };
 
@@ -161,6 +167,7 @@ function AdminDashboard() {
       <p>
         <a href="/plans">Browse Plans</a>
       </p>
+      <p>{error}</p>
     </div>
   );
 }
