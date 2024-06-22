@@ -2,7 +2,7 @@ import { User } from "../models/user.models.js";
 import { Product } from "../models/product.models.js";
 import { Organization } from "../models/organization.models.js";
 import validator from "validator";
-import {Order} from "../models/order.models.js"
+import { Order } from "../models/order.models.js";
 
 // method to generate access and refresh tokens
 const generateAccessandRefreshToken = async function (userId) {
@@ -109,6 +109,9 @@ const adminRegistration = async (req, res) => {
       organization: organizationId,
     });
 
+    organization.admin = admin._id;
+    await organization.save({ validateBeforeSave: false });
+
     const createdUser = await User.findById(admin._id).select("-password");
 
     if (!createdUser) {
@@ -166,7 +169,7 @@ const userRegistration = async (req, res) => {
         .json({ error: "Something went wrong while creating the user" });
     }
 
-    const users = await User.find({organization: req.user.organization})
+    const users = await User.find({ organization: req.user.organization });
 
     return res
       .status(201)
@@ -379,5 +382,5 @@ export {
   changePassword,
   addProductToCart,
   getUserCart,
-  getOrderHistory
+  getOrderHistory,
 };

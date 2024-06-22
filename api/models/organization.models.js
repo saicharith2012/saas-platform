@@ -15,6 +15,10 @@ const organizationSchema = new mongoose.Schema(
     },
     billingEmail: {
       type: String,
+    },
+    admin : {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     }
   },
   { timestamps: true }

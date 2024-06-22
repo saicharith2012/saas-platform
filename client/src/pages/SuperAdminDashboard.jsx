@@ -181,6 +181,7 @@ function SuperAdminDashboard() {
               <tr>
                 <th>Name</th>
                 <th>Plan</th>
+                <th>Admin</th>
                 <th>Users</th>
               </tr>
             </thead>
@@ -189,6 +190,7 @@ function SuperAdminDashboard() {
                 <tr key={org._id}>
                   <td>{org.name}</td>
                   <td>{org.plan ? org.plan.name : "No plan"}</td>
+                  <td>{org.admin ? org.admin.name : ""}</td>
                   <td>{userCounts[org._id] - 1 || 0}</td>
                 </tr>
               ))}

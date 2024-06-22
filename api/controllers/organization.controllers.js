@@ -46,7 +46,8 @@ const createOrganization = async (req, res) => {
 // get all organistions
 const getAllOrganizations = async (req, res) => {
   try {
-    const organizations = await Organization.find().populate("plan");
+    const organizations = await Organization.find().populate("admin").populate("plan");
+
     return res.json({
       organizations,
       message: "Organizations fetched successfully",
