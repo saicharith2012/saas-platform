@@ -11,8 +11,8 @@ const createCheckoutSessionSubscription = async (req, res) => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   try {
     const organizationId = req.user.organization;
-    console.log(organizationId.toString());
-    console.log(req.body.priceId);
+    // console.log(organizationId.toString());
+    // console.log(req.body.priceId);
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
