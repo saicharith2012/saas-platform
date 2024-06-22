@@ -141,15 +141,18 @@ Open your browser and go to `http://localhost:3001` to see the application runni
 ![Screenshot from 2024-06-18 09-02-31](https://github.com/saicharith2012/saas-platform/assets/78155986/4ee1f8de-2f01-4628-93b3-bc8adfe1fda3)
 
 ### Super admin dashboard
-![Screenshot from 2024-06-18 09-04-26](https://github.com/saicharith2012/saas-platform/assets/78155986/11fc17cc-087b-4ba3-a97d-5baf91bf1ea7)
+![image](https://github.com/saicharith2012/saas-platform/assets/78155986/12af0cb8-0848-4bca-b43b-ed9f94311da8)
 
 ### Admin Dashboard
-![Screenshot from 2024-06-18 09-04-44](https://github.com/saicharith2012/saas-platform/assets/78155986/e70ba631-8d6f-413e-901a-b1b21a2e5cea)
+![image](https://github.com/saicharith2012/saas-platform/assets/78155986/4d1c9938-6477-469f-b89b-cf3825441b41)
 
 ### Browse plans
 ![Screenshot from 2024-06-18 09-04-51](https://github.com/saicharith2012/saas-platform/assets/78155986/06131650-356f-4ae9-93f0-f2c9e9edbe49)
 
 ### Stripe Checkout - subscription
-![image](https://github.com/saicharith2012/saas-platform/assets/78155986/d149b0d6-fadc-4149-89c0-872bd35899cc)
-![image](https://github.com/saicharith2012/saas-platform/assets/78155986/a8d91e39-3542-4759-9eab-d758ee27d812)
+![image](https://github.com/saicharith2012/saas-platform/assets/78155986/5c95daf6-80fe-49c1-8019-2be36aa4584e)
+
+### Success Page
+![image](https://github.com/saicharith2012/saas-platform/assets/78155986/619c3700-4146-437e-b7f5-0a99a6f41fb6)
+
 
