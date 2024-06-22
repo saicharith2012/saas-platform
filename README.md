@@ -100,8 +100,6 @@ Open your browser and go to `http://localhost:3001` to see the application runni
 -   **Logout:** Click on the "Logout" button in the navigation bar to log out from the application.
 
 ## For Users
-
--   **Browse Plans:** Users can browse available subscription plans by navigating to the plans page.
 -   **Add to Cart:** Users can add products or plans to their cart and proceed to checkout.
 -   **Checkout:** Users can use the integrated Stripe checkout to complete their purchase.
 -   **Order History:** After purchasing, users can view their order history from their account page.
