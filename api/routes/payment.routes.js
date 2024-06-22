@@ -139,17 +139,30 @@ router
     }
 
     // Handle successful subscription payment or update events
-    if (event.type === "invoice.payment_succeeded") {
-      const session = event.data.object;
-      const customerId = session.customer; // Stripe customer ID
+    
+  if (event.type === "invoice.payment_succeeded") {
+    const session = event.data.object;
+    const customerId = session.customer;
 
+    let retries = 3;
+    const retryInterval = 2000; // 1 second
+
+    const processInvoicePayment = async () => {
       try {
-        // 1. Find the organization associated with the customer
-        const organization = await Organization.findOne({
-          stripeCustomerId: customerId,
-        });
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+        const organization = await Organization.findOne({ stripeCustomerId: customerId });
 
-        // 2. Retrieve the subscription for this organization
+        if (!organization && retries > 0) {
+          retries--;
+          console.log(`Retrying... attempts left: ${retries}`);
+          setTimeout(processInvoicePayment, retryInterval);
+          return;
+        } else if (!organization) {
+          return res.status(404).json({
+            error: "Organization not found with the given customerId.",
+          });
+        }
+
         const subscription = await Subscription.findOne({
           organization: organization._id,
           status: "active",
@@ -161,7 +174,6 @@ router
           });
         }
 
-        // 3. Update the subscription end date based on the invoice period
         const invoice = await stripe.invoices.retrieve(session.id);
         const invoicePeriodEnd = invoice.lines.data[0].period.end; // Assuming one line item in the invoice
         subscription.endDate = new Date(invoicePeriodEnd * 1000); // Convert to milliseconds
@@ -169,7 +181,10 @@ router
       } catch (err) {
         console.error("Error handling subscription renewal:", err);
       }
-    }
+    };
+
+    processInvoicePayment();
+  }
 
     if (event.type === "customer.subscription.deleted") {
       const session = event.data.object;
