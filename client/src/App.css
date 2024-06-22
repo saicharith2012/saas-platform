@@ -27,8 +27,11 @@
     text-decoration: none;
     color: black;
     margin: 0 1rem;
+    border: 1px solid black;
+    padding: 4px;
   }
+
+.navbar-link: hover {
+    background-color: gray;
+}
   
-.navbar-link:hover {
-    text-decoration: underline;
-  }
