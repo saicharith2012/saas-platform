@@ -26,13 +26,14 @@ const createPlan = async (req, res) => {
     const stripeProduct = await stripe.products.create({
       name,
       description,
+      type: "service",
     });
 
     // Create a new price in Stripe
     const stripePrice = await stripe.prices.create({
       unit_amount: pricePerUserPerYear * 100, // Amount in paise
       currency: "inr",
-      recurring: { interval: "year" },
+      recurring: { interval: "year", usage_type: "metered" },
       product: stripeProduct.id,
     });
 
@@ -121,7 +122,6 @@ const deletePlan = async (req, res) => {
     return res
       .status(200)
       .json({ message: "Plan archived and deleted from the database" });
-
   } catch (err) {
     console.error("Error deleting plan:", err);
     res.status(500).json({ error: err.message });
