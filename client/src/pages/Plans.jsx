@@ -3,6 +3,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { loadStripe } from "@stripe/stripe-js";
 import { Navigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
@@ -35,7 +36,7 @@ function Plans() {
     try {
       const response = await axios.post(
         "http://localhost:5000/api/payments/create-checkout-session/subscription",
-        { priceId: plan.stripeProductId },
+        { priceId: plan.stripePriceId },
         { withCredentials: true }
       );
       const { sessionId } = response.data;
@@ -47,6 +48,7 @@ function Plans() {
 
   return (
     <div className="plans">
+    <Navbar/>
       <h2>Choose Your Plan</h2>
       <div className="plans-container">
         {plans.map((plan) => (
