@@ -50,6 +50,7 @@ function OrderHistory({ userId }) {
                   </li>
                 ))}
               </ul>
+              <p>ShippingAddress: {order.ShippingAddress}</p>
               <hr />
             </div>
           ))}

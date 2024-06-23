@@ -122,8 +122,12 @@ router
             return res.status(404).json({ error: "Pending order not found." });
           }
 
+          const address = session.customer_details.address;
+          console.log(address)
+
           // 2. Update order status and payment details
           order.orderStatus = "success";
+          order.ShippingAddress = `${address.line1}, ${address.line2}, ${address.city}, ${address.state}, ${address.country}, ${address.postal_code}`;
           order.paymentId = paymentIntentId;
           await order.save({ validateBeforeSave: false });
 
@@ -139,52 +143,54 @@ router
     }
 
     // Handle successful subscription payment or update events
-    
-  if (event.type === "invoice.payment_succeeded") {
-    const session = event.data.object;
-    const customerId = session.customer;
 
-    let retries = 3;
-    const retryInterval = 2000; // 1 second
+    if (event.type === "invoice.payment_succeeded") {
+      const session = event.data.object;
+      const customerId = session.customer;
 
-    const processInvoicePayment = async () => {
-      try {
-        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-        const organization = await Organization.findOne({ stripeCustomerId: customerId });
+      let retries = 3;
+      const retryInterval = 2000; // 1 second
 
-        if (!organization && retries > 0) {
-          retries--;
-          console.log(`Retrying... attempts left: ${retries}`);
-          setTimeout(processInvoicePayment, retryInterval);
-          return;
-        } else if (!organization) {
-          return res.status(404).json({
-            error: "Organization not found with the given customerId.",
+      const processInvoicePayment = async () => {
+        try {
+          const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+          const organization = await Organization.findOne({
+            stripeCustomerId: customerId,
           });
-        }
 
-        const subscription = await Subscription.findOne({
-          organization: organization._id,
-          status: "active",
-        });
+          if (!organization && retries > 0) {
+            retries--;
+            console.log(`Retrying... attempts left: ${retries}`);
+            setTimeout(processInvoicePayment, retryInterval);
+            return;
+          } else if (!organization) {
+            return res.status(404).json({
+              error: "Organization not found with the given customerId.",
+            });
+          }
 
-        if (!subscription) {
-          return res.status(404).json({
-            error: "Active subscription not found for this organization.",
+          const subscription = await Subscription.findOne({
+            organization: organization._id,
+            status: "active",
           });
+
+          if (!subscription) {
+            return res.status(404).json({
+              error: "Active subscription not found for this organization.",
+            });
+          }
+
+          const invoice = await stripe.invoices.retrieve(session.id);
+          const invoicePeriodEnd = invoice.lines.data[0].period.end; // Assuming one line item in the invoice
+          subscription.endDate = new Date(invoicePeriodEnd * 1000); // Convert to milliseconds
+          await subscription.save();
+        } catch (err) {
+          console.error("Error handling subscription renewal:", err);
         }
+      };
 
-        const invoice = await stripe.invoices.retrieve(session.id);
-        const invoicePeriodEnd = invoice.lines.data[0].period.end; // Assuming one line item in the invoice
-        subscription.endDate = new Date(invoicePeriodEnd * 1000); // Convert to milliseconds
-        await subscription.save();
-      } catch (err) {
-        console.error("Error handling subscription renewal:", err);
-      }
-    };
-
-    await processInvoicePayment();
-  }
+      await processInvoicePayment();
+    }
 
     if (event.type === "customer.subscription.deleted") {
       const session = event.data.object;
