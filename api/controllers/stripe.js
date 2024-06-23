@@ -81,6 +81,9 @@ const createCheckoutSessionProducts = async (req, res) => {
       mode: "payment",
       payment_method_types: ["card"],
       line_items: lineItems,
+      shipping_address_collection: {
+        allowed_countries: ["IN"],
+      },
       success_url: `${YOUR_DOMAIN}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${YOUR_DOMAIN}/cancel`,
       metadata: { userId: userId.toString() },
