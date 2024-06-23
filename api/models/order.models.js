@@ -34,6 +34,9 @@ const orderSchema = new mongoose.Schema(
     },
     currency: {
       type: String
+    },
+    ShippingAddress: {
+      type: String
     }
   },
   { timestamps: true }
