@@ -289,7 +289,7 @@ function SuperAdminDashboard() {
                   <td>{plan.name}</td>
                   <td>{plan.description}</td>
                   <td>{plan.pricePerUserPerYear}</td>
-                  <td>{!plan.userLimit ? "NA" : plan.userLimit}</td>
+                  <td>{!plan.userLimit ? "NA" : plan.userLimit - 1}</td>
                   <td>
                     <button onClick={() => openEditModal(plan)}>Edit</button>
                     <button onClick={() => handleDeletePlan(plan._id)}>
