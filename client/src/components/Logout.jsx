@@ -21,7 +21,7 @@ const Logout = () => {
     }
   };
 
-  return <Link className="navbar-link" style={{textDecoration: "none", color: "black"}} onClick={handleLogout}>Logout</Link>;
+  return <button className="navbar-buttons" onClick={handleLogout}>Logout</button>;
 };
 
 export default Logout;

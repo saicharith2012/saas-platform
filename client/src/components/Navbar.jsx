@@ -18,13 +18,29 @@ export default function Navbar() {
       }}
     >
       <h1>
-        <Link style={{textDecoration: "none", color: "black"}} to="/">
+        <Link style={{ textDecoration: "none", color: "black" }} to="/">
           Saas Platform
         </Link>
       </h1>
-      {isAdmin ? <Link className="navbar-link" to="/admin-dashboard">Admin Dashboard</Link> : null}
-      {isSuperAdmin? <Link className="navbar-link" to="/superadmin-dashboard">Super Admin Dashboard</Link> : null}
-      {isLoggedIn ? <><Logout/> <p>{user.name}</p> </>: <Link className="navbar-link" to="/login">Login</Link>}
+      {isAdmin ? (
+        <button className="navbar-buttons">
+          <Link style={{textDecoration: "none", color: "black"}} to="/admin-dashboard">Admin Dashboard</Link>
+        </button>
+      ) : null}
+      {isSuperAdmin ? (
+        <button className="navbar-buttons">
+          <Link style={{textDecoration: "none", color: "black"}} to="/superadmin-dashboard">Super Admin Dashboard</Link>
+        </button>
+      ) : null}
+      {isLoggedIn ? (
+        <>
+          <Logout /> <p>{user.name}</p>{" "}
+        </>
+      ) : (
+        <button className="navbar-buttons">
+          <Link style={{textDecoration: "none", color: "black"}} to="/login">Login</Link>
+        </button>
+      )}
     </div>
   );
 }

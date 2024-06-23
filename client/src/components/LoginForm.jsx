@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../authSlice.js";
+import Navbar from "./Navbar.jsx";
 
 function LoginForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, status, /*error*/ } = useSelector((state) => state.auth);
+  const { user, status /*error*/ } = useSelector((state) => state.auth);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -45,6 +46,7 @@ function LoginForm() {
 
   return (
     <div className="login-form-container">
+      <Navbar/>
       <h2>Login</h2>
       <form onSubmit={handleSubmit} className="login-form">
         <div className="form-group">

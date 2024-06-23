@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Modal from "react-modal";
 import Navbar from "../components/Navbar";
+import CreatePlanForm from "../components/createPlanForm";
 
 function SuperAdminDashboard() {
   const [organizations, setOrganizations] = useState([]);
@@ -15,11 +17,18 @@ function SuperAdminDashboard() {
   const [adminPassword, setAdminPassword] = useState("");
   const [isCreating, setIsCreating] = useState(false);
 
+  // New state for plans
+  const [plans, setPlans] = useState([]);
+  const [isLoadingPlans, setIsLoadingPlans] = useState(true);
+
+  // New state for modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentPlan, setCurrentPlan] = useState({});
+
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    // Check if user is super admin
     if (user && user.role !== "Super Admin") {
       navigate("/"); // Redirect to home or login page
     } else {
@@ -39,7 +48,6 @@ function SuperAdminDashboard() {
         }
       };
 
-      // Fetch user count for each organization
       const fetchUserCounts = async (organizations) => {
         try {
           const counts = {};
@@ -61,26 +69,37 @@ function SuperAdminDashboard() {
         }
       };
 
+      const fetchPlans = async () => {
+        try {
+          const response = await axios.get("http://localhost:5000/api/plans", {
+            withCredentials: true,
+          });
+          setPlans(response.data); // Set plans state
+          setIsLoadingPlans(false); // Set loading to false after fetching plans
+        } catch (error) {
+          console.error("Error fetching plans:", error);
+        }
+      };
+
       fetchOrganizations()
         .then(fetchUserCounts)
+        .then(fetchPlans)
         .catch((error) => {
           console.error("Failed to fetch data:", error);
         });
     }
-  }, [user, navigate]);
+  }, [user, navigate, plans]);
 
   const handleCreateOrganization = async (e) => {
     e.preventDefault();
     setIsCreating(true);
     try {
-      // Create organization
       const orgResponse = await axios.post(
         "http://localhost:5000/api/organizations/create-organization",
         { name: orgName, billingEmail },
         { withCredentials: true }
       );
 
-      // Create admin for the organization
       const adminResponse = await axios.post(
         "http://localhost:5000/api/users/admin-signup",
         {
@@ -92,14 +111,12 @@ function SuperAdminDashboard() {
         { withCredentials: true }
       );
 
-      // Update organizations state with new organization
       setOrganizations([...organizations, orgResponse.data.organization]);
       setUserCounts({
         ...userCounts,
         [orgResponse.data.organization._id]: 1,
       });
 
-      // Reset form fields
       setOrgName("");
       setBillingEmail("");
       setAdminName(""); // Reset admin name
@@ -110,6 +127,58 @@ function SuperAdminDashboard() {
     } finally {
       setIsCreating(false);
     }
+  };
+
+  const handleDeletePlan = async (planId) => {
+    try {
+      await axios.delete(
+        `http://localhost:5000/api/plans/delete-plan/${planId}`,
+        {
+          withCredentials: true,
+        }
+      );
+      setPlans(plans.filter((plan) => plan._id !== planId));
+    } catch (error) {
+      console.error("Error deleting plan:", error);
+    }
+  };
+
+  const handleEditPlan = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/api/plans/update-plan/${currentPlan._id}`,
+        currentPlan,
+        {
+          withCredentials: true,
+        }
+      );
+      setPlans(
+        plans.map((plan) =>
+          plan._id === currentPlan._id ? response.data : plan
+        )
+      );
+      setIsModalOpen(false); // Close the modal
+    } catch (error) {
+      console.error("Error updating plan:", error);
+    }
+  };
+
+  const openEditModal = (plan) => {
+    setCurrentPlan(plan);
+    setIsModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCurrentPlan((prevPlan) => ({
+      ...prevPlan,
+      [name]: value,
+    }));
   };
 
   return (
@@ -198,6 +267,97 @@ function SuperAdminDashboard() {
           </table>
         </div>
       )}
+
+      {isLoadingPlans ? (
+        <p>Loading plans...</p>
+      ) : (
+        <div>
+          <h2>Plans</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price Per User Per Year</th>
+                <th>User Limit</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {plans.map((plan) => (
+                <tr key={plan._id}>
+                  <td>{plan.name}</td>
+                  <td>{plan.description}</td>
+                  <td>
+                    {plan.pricePerUserPerYear === null
+                      ? "NA"
+                      : plan.pricePerUserPerYear}
+                  </td>
+                  <td>{plan.userLimit}</td>
+                  <td>
+                    <button onClick={() => openEditModal(plan)}>Edit</button>
+                    <button onClick={() => handleDeletePlan(plan._id)}>
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <CreatePlanForm />
+
+      <Modal isOpen={isModalOpen} onRequestClose={closeEditModal}>
+        <h2>Edit Plan</h2>
+        <form onSubmit={handleEditPlan}>
+          <div>
+            <label>Name:</label>
+            <input
+              type="text"
+              name="name"
+              value={currentPlan.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div>
+            <label>Description:</label>
+            <input
+              type="text"
+              name="description"
+              value={currentPlan.description}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div>
+            <label>Price Per User Per Year:</label>
+            <input
+              type="number"
+              name="pricePerUserPerYear"
+              value={currentPlan.pricePerUserPerYear}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div>
+            <label>User Limit:</label>
+            <input
+              type="number"
+              name="userLimit"
+              value={currentPlan.userLimit}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <button type="submit">Save Changes</button>
+          <button type="button" onClick={closeEditModal}>
+            Cancel
+          </button>
+        </form>
+      </Modal>
     </div>
   );
 }

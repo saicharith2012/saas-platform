@@ -1,7 +1,6 @@
 import { Plan } from "../models/plan.models.js";
 import Stripe from "stripe";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+import { Subscription } from "../models/subscription.models.js";
 
 // get all plans
 const getAllPlans = async (req, res) => {
@@ -15,14 +14,11 @@ const getAllPlans = async (req, res) => {
 
 // create a plan
 const createPlan = async (req, res) => {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   try {
     const { name, description, pricePerUserPerYear, userLimit } = req.body;
 
-    if (
-      [name, description, pricePerUserPerYear, userLimit].some(
-        (field) => field.trim() === ""
-      )
-    ) {
+    if (!name || !description || !pricePerUserPerYear || !userLimit) {
       return res.status(400).json({ error: "Please fill all the fields" });
     }
 
@@ -40,13 +36,16 @@ const createPlan = async (req, res) => {
       product: stripeProduct.id,
     });
 
+    // console.log(stripePrice);
+
     // Create a new plan in your database
     const plan = new Plan({
       name,
       description,
       pricePerUserPerYear,
       userLimit,
-      stripeProductId: stripeProduct.id, // Link to the Stripe product ID
+      stripeProductId: stripeProduct.id,
+      stripePriceId: stripePrice.id,
     });
 
     await plan.save();
@@ -59,24 +58,29 @@ const createPlan = async (req, res) => {
 
 // update a plan
 const updatePlan = async (req, res) => {
-  try {
-    const plan = await Plan.findById(req.params.id);
-    if (!plan) return res.status(404).json({ error: "Plan not found" });
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+  try {
     const { name, description, pricePerUserPerYear, userLimit } = req.body;
 
-    if (
-      [name, description, pricePerUserPerYear, userLimit].some(
-        (field) => field.trim() === ""
-      )
-    ) {
+    if (!name || !description || !pricePerUserPerYear || !userLimit) {
       return res.status(400).json({ error: "Please fill all the fields" });
     }
 
-    // Update the product in Stripe
-    await stripe.products.update(plan.stripeProductId, {
-      name: name || plan.name,
-      description: description || plan.description,
+    const plan = await Plan.findById(req.params.id);
+    if (!plan) return res.status(404).json({ error: "Plan not found" });
+
+    // create a new product and price in Stripe
+    const product = await stripe.products.create({
+      name,
+      description,
+    });
+
+    const price = await stripe.prices.create({
+      unit_amount: pricePerUserPerYear * 100, // Amount in paise
+      currency: "inr",
+      recurring: { interval: "year" },
+      product: product.id,
     });
 
     // Update plan details in your database
@@ -84,6 +88,8 @@ const updatePlan = async (req, res) => {
     plan.description = description || plan.description;
     plan.pricePerUserPerYear = pricePerUserPerYear || plan.pricePerUserPerYear;
     plan.userLimit = userLimit === undefined ? plan.userLimit : userLimit;
+    plan.stripeProductId = product.id;
+    plan.stripePriceId = price.id;
 
     await plan.save();
     res.json(plan);
@@ -95,27 +101,31 @@ const updatePlan = async (req, res) => {
 
 // delete a plan
 const deletePlan = async (req, res) => {
-    try {
-        const plan = await Plan.findById(req.params.id);
-        if (!plan) return res.status(404).json({ error: "Plan not found" });
-    
-        // Check if the plan is associated with any active subscriptions
-        const activeSubscriptions = await Subscription.find({ plan: plan._id, status: "active" });
-        if (activeSubscriptions.length > 0) {
-          return res.status(400).json({ error: "Cannot delete plan with active subscriptions" });
-        }
-    
-        // Delete the plan in Stripe (You may need to archive the product instead of deleting it to prevent issues with existing subscriptions)
-        // await stripe.products.del(plan.stripeProductId);
-    
-        // Delete the plan from your database
-        await Plan.findByIdAndDelete(req.params.id);
-    
-        res.json({ message: "Plan deleted" });
-      } catch (err) {
-        console.error("Error deleting plan:", err);
-        res.status(500).json({ error: err.message });
-      }
-}
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+  try {
+    const plan = await Plan.findById(req.params.id);
+    if (!plan) return res.status(404).json({ error: "Plan not found" });
+    // Check if the plan is associated with any active subscriptions
+    const activeSubscriptions = await Subscription.find({
+      plan: plan._id,
+      status: "active",
+    });
+
+    // Archive the plan in Stripe instead of deleting it
+    //  to prevent issues with existing subscriptions
+    await stripe.products.update(plan.stripeProductId, { active: false });
+
+    await Plan.findByIdAndDelete(req.params.id);
+
+    return res
+      .status(200)
+      .json({ message: "Plan archived and deleted from the database" });
+
+  } catch (err) {
+    console.error("Error deleting plan:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
 
 export { getAllPlans, createPlan, updatePlan, deletePlan };

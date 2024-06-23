@@ -23,15 +23,19 @@
     width: 320px;
 }
 
-.navbar-link {
+.navbar-buttons {
     text-decoration: none;
     color: black;
     margin: 0 1rem;
-    border: 1px solid black;
     padding: 4px;
+    cursor: pointer;
+    background-color: white;
+    fontsize: 15px;
+    border: 1px solid black;
   }
 
-.navbar-link: hover {
-    background-color: gray;
+.navbar-buttons:hover {
+    background-color: #F2f2f2
 }
-  
+
+

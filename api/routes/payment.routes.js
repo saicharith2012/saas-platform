@@ -183,7 +183,7 @@ router
       }
     };
 
-    processInvoicePayment();
+    await processInvoicePayment();
   }
 
     if (event.type === "customer.subscription.deleted") {
