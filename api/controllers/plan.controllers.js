@@ -18,7 +18,7 @@ const createPlan = async (req, res) => {
   try {
     const { name, description, pricePerUserPerYear, userLimit } = req.body;
 
-    if (!name || !description || !pricePerUserPerYear || !userLimit) {
+    if (!name || !description || !pricePerUserPerYear) {
       return res.status(400).json({ error: "Please fill all the fields" });
     }
 
@@ -26,14 +26,13 @@ const createPlan = async (req, res) => {
     const stripeProduct = await stripe.products.create({
       name,
       description,
-      type: "service",
     });
 
     // Create a new price in Stripe
     const stripePrice = await stripe.prices.create({
       unit_amount: pricePerUserPerYear * 100, // Amount in paise
       currency: "inr",
-      recurring: { interval: "year", usage_type: "metered" },
+      recurring: { interval: "year"},
       product: stripeProduct.id,
     });
 

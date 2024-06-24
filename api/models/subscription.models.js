@@ -25,6 +25,13 @@ const subscriptionSchema = new mongoose.Schema(
       required: true,
     },
     stripeSubscriptionId: { type: String },
+    users: {
+      type: Number,
+      default: 0,
+    },
+    latestInvoiceId: {
+      type: String,
+    }
   },
   { timestamps: true }
 );

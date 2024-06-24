@@ -63,7 +63,7 @@ router
 
         try {
           const plan = await Plan.findOne({
-            stripeProductId: session.metadata.planId,
+            stripePriceId: session.metadata.planId,
           });
 
           if (!plan) {
@@ -77,7 +77,6 @@ router
           }
 
           organization.plan = plan._id;
-          organization.stripeCustomerId = session.customer;
           await organization.save();
 
           // Create or update the subscription in the database
@@ -93,6 +92,7 @@ router
               startDate: new Date(),
               status: "active",
               stripeSubscriptionId: session.subscription,
+              users: 0,
             });
             await newSubscription.save();
           } else {
@@ -123,7 +123,7 @@ router
           }
 
           const address = session.customer_details.address;
-          console.log(address)
+          console.log(address);
 
           // 2. Update order status and payment details
           order.orderStatus = "success";
@@ -190,6 +190,44 @@ router
       };
 
       await processInvoicePayment();
+    }
+
+    if (event.type === "invoice.payment_failed") {
+      const failedInvoice = event.data.object;
+      try {
+        const subscriptionId = failedInvoice.subscription;
+        const subscription = await Subscription.findOne({
+          stripeSubscriptionId: subscriptionId,
+        });
+
+        if (subscription) {
+          subscription.status = "past_due";
+          await subscription.save();
+          console.log(`Subscription ${subscriptionId} payment failed.`);
+        }
+      } catch (err) {
+        console.error("Error handling invoice payment failed:", err);
+      }
+    }
+
+    if (event.type === "invoice.created") {
+      const createdInvoice = event.data.object;
+      try {
+        const subscriptionId = createdInvoice.subscription;
+        const subscription = await Subscription.findOne({
+          stripeSubscriptionId: subscriptionId,
+        });
+
+        if (subscription) {
+          subscription.latestInvoiceId = invoice.id;
+          await subscription.save();
+          console.log(
+            `Invoice ${invoice.id} created for subscription ${subscriptionId}.`
+          );
+        }
+      } catch (err) {
+        console.error("Error handling invoice creation:", err);
+      }
     }
 
     if (event.type === "customer.subscription.deleted") {

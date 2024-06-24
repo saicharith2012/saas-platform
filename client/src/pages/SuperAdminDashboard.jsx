@@ -100,7 +100,7 @@ function SuperAdminDashboard() {
         { withCredentials: true }
       );
 
-      const adminResponse = await axios.post(
+      await axios.post(
         "http://localhost:5000/api/users/admin-signup",
         {
           name: adminName, // Pass admin name

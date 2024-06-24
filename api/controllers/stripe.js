@@ -14,19 +14,44 @@ const createCheckoutSessionSubscription = async (req, res) => {
     // console.log(organizationId.toString());
     // console.log(req.body.priceId);
 
+    const organization = await Organization.findById(organizationId);
+
+    if (!organization) {
+      return res.status(404).json({ error: "Organization not found" });
+    }
+
+    // Create or retrieve Stripe Customer
+    let customer = organization.stripeCustomerId;
+    if (!customer) {
+      const stripeCustomer = await stripe.customers.create({
+        email: organization.billingEmail,  
+      });
+      customer = stripeCustomer.id;
+      organization.stripeCustomerId = customer;
+      await organization.save();
+    }
+
+
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       payment_method_types: ["card"],
-      line_items: [{ price: req.body.priceId, quantity: 1 }],
+      customer: customer,
+      billing_address_collection: 'required',
+      shipping_address_collection: {
+        allowed_countries: ["IN"],
+      },
+      line_items: [{ price: req.body.priceId, quantity: 1}],
       success_url: `${YOUR_DOMAIN}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${YOUR_DOMAIN}/cancel`,
       client_reference_id: organizationId.toString(),
       metadata: { planId: req.body.priceId.toString() },
+      allow_promotion_codes: true,
     });
 
     res.json({ sessionId: session.id });
   } catch (err) {
-    res.status(500).json({ error: err.message, message: "error" });
+    console.error("Error creating checkout session:", err);
+    res.status(500).json({ error: err.message });
   }
 };
 
@@ -65,6 +90,16 @@ const createCheckoutSessionProducts = async (req, res) => {
       return res.status(400).json({ error: "Cart is empty." });
     }
 
+    let customer = user.stripeCustomerId;
+    if (!customer) {
+      const stripeCustomer = await stripe.customers.create({
+        email: user.email,
+      });
+      customer = stripeCustomer.id;  
+      user.stripeCustomerId = customer;
+      await user.save();  
+    }
+
     const lineItems = cart.map((item) => ({
       price_data: {
         currency: "inr",
@@ -81,11 +116,13 @@ const createCheckoutSessionProducts = async (req, res) => {
       mode: "payment",
       payment_method_types: ["card"],
       line_items: lineItems,
+      billing_address_collection: 'required',
       shipping_address_collection: {
         allowed_countries: ["IN"],
       },
       success_url: `${YOUR_DOMAIN}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${YOUR_DOMAIN}/cancel`,
+      customer: customer,
       metadata: { userId: userId.toString() },
     });
 

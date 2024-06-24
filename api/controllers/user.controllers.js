@@ -3,6 +3,7 @@ import { Product } from "../models/product.models.js";
 import { Organization } from "../models/organization.models.js";
 import validator from "validator";
 import { Order } from "../models/order.models.js";
+import { Subscription } from "../models/subscription.models.js";
 
 // method to generate access and refresh tokens
 const generateAccessandRefreshToken = async function (userId) {
@@ -136,13 +137,12 @@ const userRegistration = async (req, res) => {
     const organization = await Organization.findById(
       req.user.organization
     ).populate("plan");
+
     if (!organization) {
       return res.status(404).json({ error: "Organization not found." });
     }
 
-    // console.log(organization);
-
-    if(!organization.plan) {
+    if (!organization.plan) {
       return res.status(404).json({ error: "Not subscribed to any plan." });
     }
 
@@ -156,6 +156,39 @@ const userRegistration = async (req, res) => {
           .json({ error: "User limit for the plan has been reached." });
       }
     }
+
+    const subscription = await Subscription.findOne({
+      organization: req.user.organization,
+    });
+
+    if (!subscription) {
+      return res.status(404).json({ error: "Not subscribed to any plan." });
+    }
+
+    const stripeSubscription = await stripe.subscriptions.retrieve(
+      subscription.stripeSubscriptionId
+    );
+
+    let users = subscription.users;
+
+    // if there is already one or more users additional charge.
+    if (users >= 1) {
+      const updatedSubscription = await stripe.subscriptions.update(
+        stripeSubscription.id,
+        {
+          items: [
+            {
+              id: stripeSubscription.items.data[0].id,
+              quantity: users + 1,
+            },
+          ],
+          proration_behavior: "create_prorations",
+        }
+      );
+    }
+
+    subscription.users = users + 1;
+    await subscription.save({ validateBeforeSave: false });
 
     const user = await User.create({
       email,
@@ -173,11 +206,11 @@ const userRegistration = async (req, res) => {
         .json({ error: "Something went wrong while creating the user" });
     }
 
-    const users = await User.find({ organization: req.user.organization });
+    const orgUsers = await User.find({ organization: req.user.organization });
 
     return res
       .status(201)
-      .json({ message: "User registered successfully", users });
+      .json({ message: "User registered successfully", orgUsers });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

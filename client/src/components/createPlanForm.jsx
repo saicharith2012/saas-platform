@@ -71,7 +71,6 @@ function CreatePlanForm() {
             type="number"
             value={userLimit}
             onChange={(e) => setUserLimit(e.target.value)}
-            required
           />
         </div>
         <button type="submit">Create Plan</button>

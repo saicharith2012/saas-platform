@@ -5,7 +5,7 @@ const planSchema = new mongoose.Schema(
     name: { type: String, required: true },
     description: { type: String, required: true },
     pricePerUserPerYear: { type: Number, required: true },
-    userLimit: { type: Number },
+    userLimit: { type: Number, default: null },
     stripeProductId: { type: String},
     stripePriceId: { type: String},
   },
