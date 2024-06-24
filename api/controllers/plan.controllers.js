@@ -32,7 +32,7 @@ const createPlan = async (req, res) => {
     const stripePrice = await stripe.prices.create({
       unit_amount: pricePerUserPerYear * 100, // Amount in paise
       currency: "inr",
-      recurring: { interval: "year"},
+      recurring: { interval: "year" },
       product: stripeProduct.id,
     });
 
@@ -114,8 +114,12 @@ const deletePlan = async (req, res) => {
 
     // Archive the plan in Stripe instead of deleting it
     //  to prevent issues with existing subscriptions
+    if (activeSubscriptions.length > 0) {
+      await stripe.products.update(plan.stripeProductId, { active: false });
+      res.json({ message: "active subscriptions are there with the plan. Plan Archived at stripe." });
+    }
+    
     await stripe.products.update(plan.stripeProductId, { active: false });
-
     await Plan.findByIdAndDelete(req.params.id);
 
     return res
