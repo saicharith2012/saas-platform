@@ -82,7 +82,7 @@ function AdminDashboard() {
         console.log(response.data.error);
         setError(response.data.error) 
       }
-      setUsers(response.data.users);
+      setUsers(response.data.orgUsers);
       setNewUser({
         name: "",
         email: "",
