@@ -104,7 +104,7 @@ router
             await subscription.save();
           }
 
-          console.log("Subscription created:", subscription); // Debugging
+          // console.log("Subscription created:", subscription); // Debugging
         } catch (err) {
           console.error("Error handling subscription activation:", err);
         }
@@ -181,9 +181,13 @@ router
           }
 
           const invoice = await stripe.invoices.retrieve(session.id);
-          const invoicePeriodEnd = invoice.lines.data[0].period.end; // Assuming one line item in the invoice
-          subscription.endDate = new Date(invoicePeriodEnd * 1000); // Convert to milliseconds
-          await subscription.save();
+          console.log(invoice)
+
+          if(invoice.lines.data[0]) {
+            const invoicePeriodEnd = invoice.lines.data[0].period.end; // Assuming one line item in the invoice
+            subscription.endDate = new Date(invoicePeriodEnd * 1000); // Convert to milliseconds
+            await subscription.save();
+          }
         } catch (err) {
           console.error("Error handling subscription renewal:", err);
         }
@@ -201,7 +205,6 @@ router
         });
 
         if (subscription) {
-          subscription.status = "past_due";
           await subscription.save();
           console.log(`Subscription ${subscriptionId} payment failed.`);
         }
@@ -219,10 +222,10 @@ router
         });
 
         if (subscription) {
-          subscription.latestInvoiceId = invoice.id;
+          subscription.latestInvoiceId = createdInvoice.id;
           await subscription.save();
           console.log(
-            `Invoice ${invoice.id} created for subscription ${subscriptionId}.`
+            `Invoice ${createdInvoice.id} created for subscription ${subscriptionId}.`
           );
         }
       } catch (err) {
