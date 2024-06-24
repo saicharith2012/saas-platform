@@ -4,6 +4,7 @@ import { Organization } from "../models/organization.models.js";
 import validator from "validator";
 import { Order } from "../models/order.models.js";
 import { Subscription } from "../models/subscription.models.js";
+import Stripe from "stripe";
 
 // method to generate access and refresh tokens
 const generateAccessandRefreshToken = async function (userId) {
@@ -131,6 +132,7 @@ const adminRegistration = async (req, res) => {
 
 // user registration by admin
 const userRegistration = async (req, res) => {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   try {
     const { email, name, customPassword } = req.body;
 
@@ -173,7 +175,8 @@ const userRegistration = async (req, res) => {
 
     // if there is already one or more users additional charge.
     if (users >= 1) {
-      const updatedSubscription = await stripe.subscriptions.update(
+      console.log(stripeSubscription)
+      await stripe.subscriptions.update(
         stripeSubscription.id,
         {
           items: [
@@ -185,7 +188,22 @@ const userRegistration = async (req, res) => {
           proration_behavior: "create_prorations",
         }
       );
+
+      // Create and finalize an invoice
+      const invoice = await stripe.invoices.create({
+        customer: stripeSubscription.customer,
+        subscription: stripeSubscription.id,
+        collection_method: "charge_automatically",
+      });
+
+      if(!invoice) {
+        return res.status(404).json({error: "invoice is not defined." })
+      }
+
+
+      await stripe.invoices.finalizeInvoice(invoice.id);
     }
+
 
     subscription.users = users + 1;
     await subscription.save({ validateBeforeSave: false });
