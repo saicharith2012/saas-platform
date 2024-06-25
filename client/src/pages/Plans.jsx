@@ -36,7 +36,7 @@ function Plans() {
     try {
       const response = await axios.post(
         "http://localhost:5000/api/payments/create-checkout-session/subscription",
-        { priceId: plan.stripePriceId },
+        { priceId: plan.stripePriceId, trialPeriodDays: plan.trialPeriodDays },
         { withCredentials: true }
       );
       const { sessionId } = response.data;
@@ -48,7 +48,7 @@ function Plans() {
 
   return (
     <div className="plans">
-    <Navbar/>
+      <Navbar />
       <h2>Choose Your Plan</h2>
       <div className="plans-container">
         {plans.map((plan) => (

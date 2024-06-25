@@ -8,6 +8,7 @@ const planSchema = new mongoose.Schema(
     userLimit: { type: Number, default: null },
     stripeProductId: { type: String},
     stripePriceId: { type: String},
+    trialPeriodDays: { type: Number, default: null },
   },
   { timestamps: true }
 );

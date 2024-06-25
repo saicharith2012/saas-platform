@@ -24,29 +24,37 @@ const createCheckoutSessionSubscription = async (req, res) => {
     let customer = organization.stripeCustomerId;
     if (!customer) {
       const stripeCustomer = await stripe.customers.create({
-        email: organization.billingEmail,  
+        email: organization.billingEmail,
       });
       customer = stripeCustomer.id;
       organization.stripeCustomerId = customer;
       await organization.save();
     }
 
-
-    const session = await stripe.checkout.sessions.create({
+    const subscriptionData = {
       mode: "subscription",
       payment_method_types: ["card"],
       customer: customer,
-      billing_address_collection: 'required',
+      billing_address_collection: "required",
       shipping_address_collection: {
         allowed_countries: ["IN"],
       },
-      line_items: [{ price: req.body.priceId, quantity: 1}],
+      line_items: [{ price: req.body.priceId, quantity: 1 }],
       success_url: `${YOUR_DOMAIN}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${YOUR_DOMAIN}/cancel`,
       client_reference_id: organizationId.toString(),
       metadata: { planId: req.body.priceId.toString() },
       allow_promotion_codes: true,
-    });
+      billing_cycle_anchor: 'now',
+    };
+
+    if (req.body.trialPeriodDays !== null) {
+      subscriptionData.subscription_data = {
+        trial_period_days: req.body.trialPeriodDays,
+      };
+    }
+
+    const session = await stripe.checkout.sessions.create(subscriptionData);
 
     res.json({ sessionId: session.id });
   } catch (err) {
@@ -95,9 +103,9 @@ const createCheckoutSessionProducts = async (req, res) => {
       const stripeCustomer = await stripe.customers.create({
         email: user.email,
       });
-      customer = stripeCustomer.id;  
+      customer = stripeCustomer.id;
       user.stripeCustomerId = customer;
-      await user.save();  
+      await user.save();
     }
 
     const lineItems = cart.map((item) => ({
@@ -116,7 +124,7 @@ const createCheckoutSessionProducts = async (req, res) => {
       mode: "payment",
       payment_method_types: ["card"],
       line_items: lineItems,
-      billing_address_collection: 'required',
+      billing_address_collection: "required",
       shipping_address_collection: {
         allowed_countries: ["IN"],
       },

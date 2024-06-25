@@ -6,6 +6,7 @@ function CreatePlanForm() {
   const [description, setDescription] = useState("");
   const [pricePerUserPerYear, setPricePerUserPerYear] = useState("");
   const [userLimit, setUserLimit] = useState("");
+  const [trialPeriodDays, setTrialPeriodDays] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,6 +19,7 @@ function CreatePlanForm() {
           description,
           pricePerUserPerYear,
           userLimit,
+          trialPeriodDays
         },
         { withCredentials: true }
       );
@@ -71,6 +73,14 @@ function CreatePlanForm() {
             type="number"
             value={userLimit}
             onChange={(e) => setUserLimit(e.target.value)}
+          />
+        </div>
+        <div>
+          <label>Trial Period:</label>
+          <input
+            type="number"
+            value={trialPeriodDays}
+            onChange={(e) => setTrialPeriodDays(e.target.value)}
           />
         </div>
         <button type="submit">Create Plan</button>

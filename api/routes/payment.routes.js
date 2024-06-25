@@ -181,9 +181,9 @@ router
           }
 
           const invoice = await stripe.invoices.retrieve(session.id);
-          console.log(invoice)
+          console.log(invoice);
 
-          if(invoice.lines.data[0]) {
+          if (invoice.lines.data[0]) {
             const invoicePeriodEnd = invoice.lines.data[0].period.end; // Assuming one line item in the invoice
             subscription.endDate = new Date(invoicePeriodEnd * 1000); // Convert to milliseconds
             await subscription.save();
@@ -230,6 +230,61 @@ router
         }
       } catch (err) {
         console.error("Error handling invoice creation:", err);
+      }
+    }
+
+    if (event.type === "invoice.upcoming") {
+      const invoice = event.data.object;
+
+      // Check if the invoice is for a subscription and is upcoming
+      if (
+        invoice.subscription &&
+        invoice.billing_reason === "subscription_create"
+      ) {
+        const subscriptionId = invoice.subscription;
+        const subscription = await Subscription.findOne({
+          stripeSubscriptionId: subscriptionId,
+        });
+
+        if (!subscription) {
+          console.error(
+            `Subscription with subscription ID ${subscriptionId} not found.`
+          );
+          return;
+        }
+
+        // Determine if the invoice is upcoming due to trial period end
+        if (invoice.subscription_trial_end) {
+          const trialEndTimestamp = invoice.subscription_trial_end;
+          const currentTimestamp = Math.floor(Date.now() / 1000);
+
+          if (trialEndTimestamp <= currentTimestamp) {
+            // Trial period has ended, take appropriate actions (e.g., notify user or update status)
+            console.log(
+              `Trial period for subscription ${subscriptionId} has ended.`
+            );
+
+            // Example: Update organization status or notify admin/user
+            subscription.status = "past_due";
+            await subscription.save();
+
+            const customer = invoice.customer;
+            const organization = await Organization.findOne({
+              stripeCustomerId: customer,
+            });
+
+            if (!organization) {
+              res
+                .status(404)
+                .json({
+                  error: "Organization not found with the given customerId.",
+                });
+            }
+
+            organization.plan = null;
+            await organization.save();
+          }
+        }
       }
     }
 

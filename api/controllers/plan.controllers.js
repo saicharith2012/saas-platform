@@ -16,7 +16,7 @@ const getAllPlans = async (req, res) => {
 const createPlan = async (req, res) => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   try {
-    const { name, description, pricePerUserPerYear, userLimit } = req.body;
+    const { name, description, pricePerUserPerYear, userLimit, trialPeriodDays } = req.body;
 
     if (!name || !description || !pricePerUserPerYear) {
       return res.status(400).json({ error: "Please fill all the fields" });
@@ -46,6 +46,7 @@ const createPlan = async (req, res) => {
       userLimit,
       stripeProductId: stripeProduct.id,
       stripePriceId: stripePrice.id,
+      trialPeriodDays: trialPeriodDays || null,
     });
 
     await plan.save();
