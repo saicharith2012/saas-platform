@@ -155,7 +155,7 @@ const userRegistration = async (req, res) => {
       if (existingUsers >= organization.plan.userLimit) {
         return res
           .status(400)
-          .json({ error: "User limit for the plan has been reached." });
+          .json({ error: "User limit for the plan has been reached. You may upgrade your plan." });
       }
     }
 
@@ -193,7 +193,8 @@ const userRegistration = async (req, res) => {
       const invoice = await stripe.invoices.create({
         customer: stripeSubscription.customer,
         subscription: stripeSubscription.id,
-        collection_method: "charge_automatically",
+        collection_method: 'charge_automatically',
+        auto_advance: true,
       });
 
       if(!invoice) {
