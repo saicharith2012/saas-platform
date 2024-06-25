@@ -29,6 +29,7 @@ function CreatePlanForm() {
       setDescription("");
       setPricePerUserPerYear("");
       setUserLimit("");
+      setTrialPeriodDays("");
       // Optionally handle success (e.g., show a success message, redirect, etc.)
     } catch (error) {
       console.error("Error creating plan:", error);

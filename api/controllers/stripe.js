@@ -45,11 +45,11 @@ const createCheckoutSessionSubscription = async (req, res) => {
       client_reference_id: organizationId.toString(),
       metadata: { planId: req.body.priceId.toString() },
       allow_promotion_codes: true,
-      billing_cycle_anchor: 'now',
     };
-
+    
     if (req.body.trialPeriodDays !== null) {
       subscriptionData.subscription_data = {
+        billing_cycle_anchor: 'now',
         trial_period_days: req.body.trialPeriodDays,
       };
     }
