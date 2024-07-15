@@ -1,9 +1,7 @@
-// src/features/auth/authSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-// Async thunk for user login (remains the same)
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ email, password }) => {
@@ -21,7 +19,6 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// Async thunk for user logout
 export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
   async (_, thunkAPI) => {
@@ -43,8 +40,6 @@ export const logoutUser = createAsyncThunk(
   }
 );
 
-// Async thunk for loading user from token
-// src/features/auth/authSlice.js
 export const loadUserFromToken = createAsyncThunk(
   "auth/loadUserFromToken",
   async (_, { rejectWithValue }) => {

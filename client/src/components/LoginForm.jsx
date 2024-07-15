@@ -37,7 +37,7 @@ function LoginForm() {
     }
 
     try {
-      await dispatch(loginUser({ email, password }));
+      dispatch(loginUser({ email, password }));
       setErrorMessage(""); // Clear error message on successful login
     } catch (err) {
       setErrorMessage("Invalid credentials. Please try again.");

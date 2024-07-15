@@ -6,7 +6,6 @@ import {
 import {
   createCheckoutSessionProducts,
   createCheckoutSessionSubscription,
-  createPortalSession,
   getCheckoutSession,
 } from "../controllers/stripe.js";
 import Stripe from "stripe";
@@ -28,9 +27,6 @@ router
     verifyAuthorization("Admin"),
     createCheckoutSessionSubscription
   );
-
-// for managing stripe customer portal
-router.route("/create-portal-session").post(verifyJWT, createPortalSession);
 
 // for users to order products
 router

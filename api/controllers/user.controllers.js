@@ -155,7 +155,10 @@ const userRegistration = async (req, res) => {
       if (existingUsers >= organization.plan.userLimit) {
         return res
           .status(400)
-          .json({ error: "User limit for the plan has been reached. You may upgrade your plan." });
+          .json({
+            error:
+              "User limit for the plan has been reached. You may upgrade your plan.",
+          });
       }
     }
 
@@ -175,61 +178,56 @@ const userRegistration = async (req, res) => {
 
     // if there is already one or more users additional charge.
     if (users >= 1) {
-      console.log(stripeSubscription)
-      await stripe.subscriptions.update(
-        stripeSubscription.id,
-        {
-          items: [
-            {
-              id: stripeSubscription.items.data[0].id,
-              quantity: users + 1,
-            },
-          ],
-          proration_behavior: "create_prorations",
-        }
-      );
+      console.log(stripeSubscription);
+      await stripe.subscriptions.update(stripeSubscription.id, {
+        items: [
+          {
+            id: stripeSubscription.items.data[0].id,
+            quantity: users + 1,
+          },
+        ],
+        proration_behavior: "create_prorations",
+      });
 
       // Create and finalize an invoice
       const invoice = await stripe.invoices.create({
         customer: stripeSubscription.customer,
         subscription: stripeSubscription.id,
-        collection_method: 'charge_automatically',
+        collection_method: "charge_automatically",
         auto_advance: true,
       });
 
-      if(!invoice) {
-        return res.status(404).json({error: "invoice is not defined." })
+      if (!invoice) {
+        return res.status(404).json({ error: "invoice is not defined." });
       }
 
-
       await stripe.invoices.finalizeInvoice(invoice.id);
-    }
 
+      subscription.users = users + 1;
+      await subscription.save({ validateBeforeSave: false });
 
-    subscription.users = users + 1;
-    await subscription.save({ validateBeforeSave: false });
+      const user = await User.create({
+        email,
+        password: customPassword,
+        name,
+        role: "User",
+        organization: req.user.organization,
+      });
 
-    const user = await User.create({
-      email,
-      password: customPassword,
-      name,
-      role: "User",
-      organization: req.user.organization,
-    });
+      const createdUser = await User.findById(user._id).select("-password");
 
-    const createdUser = await User.findById(user._id).select("-password");
+      if (!createdUser) {
+        return res
+          .status(500)
+          .json({ error: "Something went wrong while creating the user" });
+      }
 
-    if (!createdUser) {
+      const orgUsers = await User.find({ organization: req.user.organization });
+
       return res
-        .status(500)
-        .json({ error: "Something went wrong while creating the user" });
+        .status(201)
+        .json({ message: "User registered successfully", orgUsers });
     }
-
-    const orgUsers = await User.find({ organization: req.user.organization });
-
-    return res
-      .status(201)
-      .json({ message: "User registered successfully", orgUsers });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
