@@ -21,8 +21,8 @@ Make sure you have the following installed:
 Step 1: Clone the repository:
 ------------------------------------
 
-    git clone https://github.com/your_username/your_repository.git
-    cd your_repository
+    git clone https://github.com/saicharith2012/saas-platform.git
+    cd saas-platform
 
 Step 1: Install dependencies:
 ------------------------------------
