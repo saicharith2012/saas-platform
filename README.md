@@ -1,4 +1,4 @@
-SaaS Platform
+<!-- ⚠️ This README has been generated from the file(s) "blueprint.md" ⚠️-->SaaS Platform
 =============
 
 This project is a SaaS platform where super admins can manage organizations and admins within those organizations.
@@ -35,17 +35,29 @@ Step 3: Set Up Environment Variables:
 
 Create a `.env` file in the root directory of the project with the following variables:
 
-## MongoDB connection URI
+
+[![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#mongodb-connection-uri)
+
+## ➤ MongoDB connection URI
 MONGODB_URI=mongodb://localhost:27017/yourdatabase
 
-## JWT Tokens secret key
+
+[![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#jwt-tokens-secret-key)
+
+## ➤ JWT Tokens secret key
 ACCESS_TOKEN_SECRET = access_token_secret_key
 REFRESH_TOKEN_SECRET = refresh_token_secret_key
 
-## Stripe secret key (replace with your Stripe secret key)
+
+[![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#stripe-secret-key-replace-with-your-stripe-secret-key)
+
+## ➤ Stripe secret key (replace with your Stripe secret key)
 STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
 
-## Stripe webhook secret (generate from Stripe Dashboard)
+
+[![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#stripe-webhook-secret-generate-from-stripe-dashboard)
+
+## ➤ Stripe webhook secret (generate from Stripe Dashboard)
 STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret`
 
 Step 4: Stripe Setup:
@@ -85,21 +97,30 @@ Open your browser and go to `http://localhost:3001` to see the application runni
 * * * * *
 
 ### Usage
-## For Super Admin
+
+[![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#for-super-admin)
+
+## ➤ For Super Admin
 
 -   **Login:** Access the login page at `http://localhost:3000/login` and log in using super admin credentials.
 -   **Super Admin Dashboard:** After logging in, you'll be redirected to the Super Admin Dashboard where you can create organizations and add admins.
 -   **Creating Organizations:** Fill out the form with the organization name, billing email, and admin details (name, email, password) to create a new organization and assign an admin.
 -   **Logout:** Click on the "Logout" button in the navigation bar to log out from the application.
 
-## For Admin
+
+[![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#for-admin)
+
+## ➤ For Admin
 
 -   **Login:** Access the login page at `http://localhost:3000/login` and log in using admin credentials provided by the super admin.
 -   **Admin Dashboard:** After logging in, you'll be redirected to the Admin Dashboard where you can manage the organization's details, view and manage users, and handle subscriptions.
 -   **Managing Users:** Admins can add, edit, or remove users within their organization.
 -   **Logout:** Click on the "Logout" button in the navigation bar to log out from the application.
 
-## For Users
+
+[![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#for-users)
+
+## ➤ For Users
 -   **Add to Cart:** Users can add products or plans to their cart and proceed to checkout.
 -   **Checkout:** Users can use the integrated Stripe checkout to complete their purchase.
 -   **Order History:** After purchasing, users can view their order history from their account page.
@@ -124,7 +145,10 @@ Open your browser and go to `http://localhost:3001` to see the application runni
     -   Ensure your Stripe API keys and webhook secret are correctly configured in your `.env` file and Stripe Dashboard.
     -   Test payments and webhook events thoroughly in a development environment before deploying to production.
 
-## Screenshots
+
+[![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#screenshots)
+
+## ➤ Screenshots
 ### Login page
 ![Screenshot from 2024-06-18 09-00-54](https://github.com/saicharith2012/saas-platform/assets/78155986/92cc2917-c4bb-43b8-be0c-4733b9ceb1e2)
 
